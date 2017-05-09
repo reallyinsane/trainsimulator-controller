@@ -15,9 +15,14 @@ import com.sun.jersey.simple.container.SimpleServerFactory;
 import de.mathan.trainsimulator.server.internal.NativeLibrary;
 import de.mathan.trainsimulator.server.internal.NativeLibraryFactory;
 
+/**
+ * REST-Service delegating the requests to Railworks.dll using JNA. 
+ * @author Matthias Hanisch
+ */
 @Path("/trainsimulator")
 public class TrainSimulatorServer {
 	static NativeLibrary nativeLibrary = null;
+  private static Closeable server;
 
 	@GET
 	@Path("/list")
@@ -48,23 +53,33 @@ public class TrainSimulatorServer {
 	public String isCombinedThrottleBrake() {
 		return Boolean.toString(nativeLibrary.GetRailSimCombinedThrottleBrake());
 	}
-
-	public static void main(String[] args) throws Exception {
-		nativeLibrary = NativeLibraryFactory
-				.getInstance("D:\\games\\SteamLibrary\\steamapps\\common\\RailWorks\\plugins\\RailDriver.dll");
-		nativeLibrary.SetRailDriverConnected(true);
-		nativeLibrary.SetRailSimConnected(true);
-		DefaultResourceConfig cfg = new DefaultResourceConfig(TrainSimulatorServer.class);
-		cfg.getContainerResponseFilters().add(new GZIPContentEncodingFilter());
-		Closeable server = SimpleServerFactory.create("http://localhost:13913", cfg);
-		try {
-			System.out.println("Press any key to stop the service...");
-			System.in.read();
-			nativeLibrary.SetRailDriverConnected(false);
-			nativeLibrary.SetRailSimConnected(false);
-		} finally {
-			server.close();
-		}
+	
+	/**
+	 * Starts the REST-Service on port 13913
+	 * @param location The location of the Railworks.dll
+	 * @return
+	 * @throws Exception
+	 */
+	public static boolean start(String location) throws Exception {
+    nativeLibrary = NativeLibraryFactory
+        .getInstance(location);
+    nativeLibrary.SetRailDriverConnected(true);
+    nativeLibrary.SetRailSimConnected(true);
+    DefaultResourceConfig cfg = new DefaultResourceConfig(TrainSimulatorServer.class);
+    cfg.getContainerResponseFilters().add(new GZIPContentEncodingFilter());
+    server = SimpleServerFactory.create("http://localhost:13913", cfg);
+    return true;
 	}
-
+	
+	/**
+	 * Stops the REST-Service
+	 * @throws Exception
+	 */
+	public static void stop() throws Exception {
+	  if(server!=null) {
+	      nativeLibrary.SetRailDriverConnected(false);
+	      nativeLibrary.SetRailSimConnected(false);
+	      server.close();
+	  }
+	}
 }
