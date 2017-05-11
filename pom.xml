@@ -7,5 +7,6 @@
   <modules>
   	<module>trainsimulator-controller-server</module>
   	<module>trainsimulator-controller-client</module>
+  	<module>trainsimulator-raspberry-sample</module>
   </modules>
 </project>
