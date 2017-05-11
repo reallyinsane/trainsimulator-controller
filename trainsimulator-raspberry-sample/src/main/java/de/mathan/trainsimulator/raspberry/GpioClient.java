@@ -1,10 +1,12 @@
 package de.mathan.trainsimulator.raspberry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
@@ -21,12 +23,15 @@ public class GpioClient {
   public static final String PZB_40="PZB_40";
   public static final String PZB_55="PZB_55";
   public static final String PZB_70="PZB_70";
-  
+
   public static final String PZB_85="PZB_85";
 
-  public static void main(String[] args) throws InterruptedException {
-    final TrainSimulator ts = TrainSimulatorFactory.getInstance("192.168.192.19", 13913);
-    Map<String, Pin> namePinMapping = new HashMap<String, Pin>();
+  private static Map<String, Pin> namePinMapping = new HashMap<String, Pin>();
+  private static String loco;
+
+  private static GpioController gpio =null;
+
+  static {
     namePinMapping.put(PZB_85, RaspiPin.GPIO_00);
     namePinMapping.put(PZB_70, RaspiPin.GPIO_01);
     namePinMapping.put(PZB_55, RaspiPin.GPIO_02);
@@ -34,22 +39,27 @@ public class GpioClient {
     namePinMapping.put(PZB_1000, RaspiPin.GPIO_04);
     namePinMapping.put(PZB_500, RaspiPin.GPIO_05);
     namePinMapping.put(PZB_40, RaspiPin.GPIO_06);
-    Map<Integer,Pin> idPinMapping = new HashMap<Integer, Pin>();
-    for(String name:namePinMapping.keySet()) {
-      idPinMapping.put(ts.getControllerList().get(name), namePinMapping.get(name));
-    }
-    
-    final GpioController gpio = GpioFactory.getInstance();
-    Map<Integer,GpioPinDigitalOutput> idOutputMap = new HashMap<Integer, GpioPinDigitalOutput>();
-    for(Integer id:idPinMapping.keySet()) {
-      idOutputMap.put(id,gpio.provisionDigitalOutputPin(idPinMapping.get(id)));
-    }
+  }
+
+  public static void main(String[] args) throws InterruptedException {
+    final TrainSimulator ts = TrainSimulatorFactory.getInstance("192.168.192.19", 13913);
+    final Map<Integer,GpioPinDigitalOutput> idOutputMap = new HashMap<Integer, GpioPinDigitalOutput>();
+    loco =ts.getLocoName();
+    System.out.println(String.format("connected to loco %s ", loco));
+    initGpio(ts, idOutputMap);
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
-        gpio.shutdown();
+        if(gpio!=null) {
+          for(GpioPinDigitalOutput pin:idOutputMap.values()) {
+            pin.low();
+          }
+              
+          gpio.shutdown();
+        }
       }
     });
+    int run=1;
     while(true) {
       for(Integer id:idOutputMap.keySet()) {
         float value =ts.getControllerValue(id, 0);
@@ -59,7 +69,51 @@ public class GpioClient {
           idOutputMap.get(id).high();
         }
       }
+      if(run++%100==0) {
+        checkLocoChanged(ts,  idOutputMap);
+      }
       Thread.sleep(10);
+    }
+  }
+
+  private static void checkLocoChanged(TrainSimulator ts,  Map<Integer,GpioPinDigitalOutput> idOutputMap) {
+    String newLoco = ts.getLocoName();
+    if(newLoco!=null&&!newLoco.equals(loco)) {
+      loco=newLoco;
+      System.out.println("loco changed to "+loco);
+      initGpio(ts, idOutputMap);
+    }
+  }
+
+  private static void initGpio(TrainSimulator ts, 
+      Map<Integer, GpioPinDigitalOutput> idOutputMap) {
+    for(GpioPinDigitalOutput pin:idOutputMap.values()) {
+      pin.low();
+    }
+    idOutputMap.clear();
+    if(gpio!=null) {
+      for(GpioPin pin:new ArrayList<GpioPin>(gpio.getProvisionedPins())) {
+        gpio.unprovisionPin(pin);
+      }
+      gpio.shutdown();
+    }
+    gpio = GpioFactory.getInstance();
+    Map<Integer,Pin> idPinMapping = new HashMap<Integer, Pin>();
+    for(String name:namePinMapping.keySet()) {
+      Integer id = ts.getControllerList().get(name);
+      Pin pin = namePinMapping.get(name);
+      if(id!=null) {
+        idPinMapping.put(id, pin);
+        System.out.println(String.format("initialized control %s with ID %s on Gpio %s", name,id, pin));
+      } else {
+        System.out.println(String.format("control %s not initialized on Gpio %s (no ID for loco)", name,id, pin));
+      }
+    }
+
+    for(Integer id:idPinMapping.keySet()) {
+      GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(idPinMapping.get(id));
+      pin.low();
+      idOutputMap.put(id,pin);
     }
   }
 }
