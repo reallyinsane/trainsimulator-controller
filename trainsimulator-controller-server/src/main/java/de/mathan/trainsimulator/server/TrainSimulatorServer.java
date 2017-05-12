@@ -41,7 +41,7 @@ public class TrainSimulatorServer {
 	public void setControllerValue(@PathParam("controllerId") int controller, @QueryParam("value") float value) {
 		nativeLibrary.SetControllerValue(controller, value);
 	}
-
+	
 	@GET
 	@Path("/loconame")
 	public String getLocoName() {
@@ -60,9 +60,9 @@ public class TrainSimulatorServer {
 	 * @return
 	 * @throws Exception
 	 */
-	public static boolean start(String location) throws Exception {
+	public static boolean start() throws Exception {
     nativeLibrary = NativeLibraryFactory
-        .getInstance(location);
+        .getInstance();
     nativeLibrary.SetRailDriverConnected(true);
     nativeLibrary.SetRailSimConnected(true);
     DefaultResourceConfig cfg = new DefaultResourceConfig(TrainSimulatorServer.class);

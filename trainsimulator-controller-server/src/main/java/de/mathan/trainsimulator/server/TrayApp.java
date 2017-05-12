@@ -3,24 +3,18 @@ package de.mathan.trainsimulator.server;
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.MenuItem;
-import java.awt.MenuShortcut;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JOptionPane;
 
-import com.sun.jna.platform.win32.Advapi32Util;
-import com.sun.jna.platform.win32.WinReg;
+import de.mathan.trainsimulator.server.internal.NativeLibraryFactory;
 
 public class TrayApp {
   
@@ -77,31 +71,16 @@ public class TrayApp {
 
   private int trayIconWidth;
   
-  private String getLocation() {
-    String railworksPath = Advapi32Util.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\railsimulator.com\\railworks","install_path");
-    if(railworksPath!=null&&!railworksPath.trim().isEmpty()) {
-      railworksPath+="\\plugins\\RailDriver.dll";
-      if(new File(railworksPath).exists()) {
-        return railworksPath;
-      }
-    }
-    return Preferences.userNodeForPackage(TrainSimulatorServer.class).get("location", "");
-  }
-  
   protected void setState(BufferedImage ico, String message) {
     icon.setImage(ico.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH));
     icon.setToolTip(tooltip(message));
   }
 
   protected void changeLocation() {
-    String location = JOptionPane.showInputDialog("Specify path to Railworks.dll", getLocation());
-    setLocation(location);
+    String location = JOptionPane.showInputDialog("Specify path to Railworks.dll", NativeLibraryFactory.getDllLocation());
+    NativeLibraryFactory.setDllLocation(location);
   }
 
-  public void setLocation(String location) {
-    Preferences.userNodeForPackage(TrainSimulatorServer.class).put("location", location);
-  }
-  
   private String tooltip(String message) {
     return String.format(TOOLTIP, message);
   }
@@ -109,8 +88,8 @@ public class TrayApp {
   
   private void start() {
     try {
-      String location = getLocation();
-      if(!location.isEmpty()&&TrainSimulatorServer.start(location)) {
+      String location = NativeLibraryFactory.getDllLocation();
+      if(!location.isEmpty()&&TrainSimulatorServer.start()) {
         setState(icoActive, RUNNING);
       }
     } catch (Exception e1) {
