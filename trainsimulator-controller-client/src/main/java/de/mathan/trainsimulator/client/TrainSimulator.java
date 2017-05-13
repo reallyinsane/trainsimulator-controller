@@ -1,15 +1,17 @@
 package de.mathan.trainsimulator.client;
 
-import java.util.Map;
-
 public interface TrainSimulator {
-	String getLocoName();
+  String getLocoName();
 
-	boolean isCombinedThrottleBrake();
+  boolean has(Control paramControl);
 
-	Map<String, Integer> getControllerList();
+  boolean is(Control paramControl);
 
-	float getControllerValue(int id, int type);
+  Float get(Control paramControl);
 
-	void setControllerValue(int id, float value);
+  Float get(Control paramControl, Type paramType);
+
+  void press(Control paramControl);
+
+  void set(Control paramControl, boolean paramBoolean);
 }

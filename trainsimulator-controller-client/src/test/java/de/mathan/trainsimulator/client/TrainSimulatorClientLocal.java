@@ -2,6 +2,8 @@ package de.mathan.trainsimulator.client;
 
 import java.util.Map;
 
+import de.mathan.trainsimulator.client.internal.TrainSimulatorRSClient;
+
 public class TrainSimulatorClientLocal{
 	
 	public static final String SIFA_LIGHT ="VigilLight";
@@ -9,7 +11,7 @@ public class TrainSimulatorClientLocal{
 	public static final String SIFA_RESET="VigilReset";
 
 	public static void main(String[] args) throws Exception {
-		final TrainSimulator ts = TrainSimulatorFactory.getInstance("localhost", 13913);
+		final TrainSimulatorRSClient ts = new TrainSimulatorRSClient("localhost", 13913);
 		Map<String, Integer> controller = ts.getControllerList();
 		System.out.println("=====");
 		for(String c:controller.keySet()) {
