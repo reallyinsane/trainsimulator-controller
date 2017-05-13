@@ -20,9 +20,8 @@ public class GpioClient {
   private static Map<Control, Pin> namePinMapping = new HashMap();
   private static String loco;
   private static GpioController gpio = null;
-  
-  static
-  {
+
+  static {
     namePinMapping.put(Control.Pzb85, RaspiPin.GPIO_00);
     namePinMapping.put(Control.Pzb70, RaspiPin.GPIO_01);
     namePinMapping.put(Control.Pzb55, RaspiPin.GPIO_02);
@@ -31,21 +30,18 @@ public class GpioClient {
     namePinMapping.put(Control.Pzb500, RaspiPin.GPIO_05);
     namePinMapping.put(Control.Pzb40, RaspiPin.GPIO_06);
   }
-  
+
   public static void main(String[] args)
-    throws InterruptedException, IOException
-  {
+      throws InterruptedException, IOException {
     TrainSimulator api = TrainSimulatorFactory.getInstance();
-    final Map<Control, GpioPinDigitalOutput> idOutputMap = new HashMap();
+    final Map<Control, GpioPinDigitalOutput> idOutputMap = new HashMap<Control, GpioPinDigitalOutput>();
     loco = api.getLocoName();
-    System.out.println(String.format("connected to loco %s ", new Object[] { loco }));
+    System.out
+        .println(String.format("connected to loco %s ", new Object[] { loco }));
     initGpio(api, idOutputMap);
-    Runtime.getRuntime().addShutdownHook(new Thread()
-    {
-      public void run()
-      {
-        if (GpioClient.gpio != null)
-        {
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        if (GpioClient.gpio != null) {
           for (GpioPinDigitalOutput pin : idOutputMap.values()) {
             pin.low();
           }
@@ -54,11 +50,10 @@ public class GpioClient {
       }
     });
     int run = 1;
-    for (;;)
-    {
-      for (Control control : idOutputMap.keySet())
-      {
-        GpioPinDigitalOutput pin = (GpioPinDigitalOutput)idOutputMap.get(control);
+    while (true) {
+      for (Control control : idOutputMap.keySet()) {
+        GpioPinDigitalOutput pin = (GpioPinDigitalOutput) idOutputMap
+            .get(control);
         if (api.is(control)) {
           pin.high();
         } else {
@@ -71,44 +66,42 @@ public class GpioClient {
       Thread.sleep(10L);
     }
   }
-  
-  private static void checkLocoChanged(TrainSimulator api, Map<Control, GpioPinDigitalOutput> idOutputMap)
-  {
+
+  private static void checkLocoChanged(TrainSimulator api,
+      Map<Control, GpioPinDigitalOutput> idOutputMap) {
     String newLoco = api.getLocoName();
-    if ((newLoco != null) && (!newLoco.equals(loco)))
-    {
+    if ((newLoco != null) && (!newLoco.equals(loco))) {
       loco = newLoco;
       System.out.println("loco changed to " + loco);
       initGpio(api, idOutputMap);
     }
   }
-  
-  private static void initGpio(TrainSimulator api, Map<Control, GpioPinDigitalOutput> idOutputMap)
-  {
+
+  private static void initGpio(TrainSimulator api,
+      Map<Control, GpioPinDigitalOutput> idOutputMap) {
     for (GpioPinDigitalOutput pin : idOutputMap.values()) {
       pin.low();
     }
     idOutputMap.clear();
-    if (gpio != null)
-    {
+    if (gpio != null) {
       for (GpioPin pin : new ArrayList<GpioPin>(gpio.getProvisionedPins())) {
         gpio.unprovisionPin(new GpioPin[] { pin });
       }
       gpio.shutdown();
     }
     gpio = GpioFactory.getInstance();
-    for (Control control : namePinMapping.keySet())
-    {
-      Pin pin = (Pin)namePinMapping.get(control);
-      if (api.has(control))
-      {
+    for (Control control : namePinMapping.keySet()) {
+      Pin pin = (Pin) namePinMapping.get(control);
+      if (api.has(control)) {
         GpioPinDigitalOutput out = gpio.provisionDigitalOutputPin(pin);
         idOutputMap.put(control, out);
-        System.out.println(String.format("initialized control %s on %s", new Object[] { control, pin }));
-      }
-      else
-      {
-        System.out.println(String.format("control %s not initialized on %s (no ID for loco)", new Object[] { control, pin }));
+        System.out.println(String.format("initialized control %s on %s",
+            new Object[] { control, pin }));
+      } else {
+        System.out.println(
+            String.format("control %s not initialized on %s (no ID for loco)",
+                new Object[] { control, pin }));
       }
     }
-  }}
+  }
+}

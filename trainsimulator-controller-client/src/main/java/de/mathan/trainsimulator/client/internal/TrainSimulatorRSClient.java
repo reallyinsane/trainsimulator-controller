@@ -39,7 +39,7 @@ public class TrainSimulatorRSClient {
     String result = (String) resource.get(String.class);
     StringTokenizer tokenizer = new StringTokenizer(result, "::");
     int index = 0;
-    Map<String, Integer> map = new HashMap();
+    Map<String, Integer> map = new HashMap<String,Integer>();
     while (tokenizer.hasMoreTokens()) {
       String token = tokenizer.nextToken();
       map.put(token, Integer.valueOf(index++));
@@ -52,7 +52,7 @@ public class TrainSimulatorRSClient {
     String result = (String) resource.queryParam("loco", loco)
         .get(String.class);
     StringTokenizer tokenizer = new StringTokenizer(result, ";");
-    Map<String, String> map = new HashMap();
+    Map<String, String> map = new HashMap<String, String>();
     while (tokenizer.hasMoreTokens()) {
       String token = tokenizer.nextToken();
       int index = token.indexOf('=');

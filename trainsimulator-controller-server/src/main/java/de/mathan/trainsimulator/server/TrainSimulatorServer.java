@@ -49,7 +49,7 @@ public class TrainSimulatorServer {
 	
 	@GET
 	@Path("/mapping")
-	public String getMapping(@PathParam("loco") String loco) {
+	public String getMapping(@QueryParam("loco") String loco) {
 	  File file = new File(loco+".mapping");
 	  if(file.exists()) {
 	    try {
