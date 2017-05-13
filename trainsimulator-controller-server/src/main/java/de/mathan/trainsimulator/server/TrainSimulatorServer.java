@@ -1,6 +1,11 @@
 package de.mathan.trainsimulator.server;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -40,6 +45,33 @@ public class TrainSimulatorServer {
 	@Path("/controller/{controllerId}")
 	public void setControllerValue(@PathParam("controllerId") int controller, @QueryParam("value") float value) {
 		nativeLibrary.SetControllerValue(controller, value);
+	}
+	
+	@GET
+	@Path("/mapping")
+	public String getMapping(@PathParam("loco") String loco) {
+	  File file = new File(loco+".mapping");
+	  if(file.exists()) {
+	    try {
+        Properties props = new Properties();
+        props.load(new FileInputStream(file));
+        StringBuilder sb = new StringBuilder();
+        for(Object key:props.keySet()) {
+          if(sb.length()>0) {
+            sb.append(';');
+          }
+          sb.append((String)key).append('=').append(props.getProperty((String) key));
+        }
+        return sb.toString();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+        return "";
+      } catch (IOException e) {
+        e.printStackTrace();
+        return "";
+      }
+	  }
+	  return "";
 	}
 	
 	@GET
