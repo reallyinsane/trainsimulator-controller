@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import de.mathan.trainsimulator.server.internal.NativeLibraryFactory;
-import de.mathan.trainsimulator.server.internal.UpdMulticastServer;
+import de.mathan.trainsimulator.server.internal.UdpMulticastServer;
 
 public class TrayApp {
 
@@ -114,7 +114,7 @@ public class TrayApp {
     icon.setPopupMenu(menu);
     SystemTray.getSystemTray().add(icon);
     start();
-    new UpdMulticastServer().start();
+    new UdpMulticastServer().start();
   }
 
   public static void main(String[] args) throws IOException, AWTException {
