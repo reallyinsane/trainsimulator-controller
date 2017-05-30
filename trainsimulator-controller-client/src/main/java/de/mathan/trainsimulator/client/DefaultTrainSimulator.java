@@ -32,10 +32,8 @@ public class DefaultTrainSimulator
     return locoName;
   }
   
-  private Map<Control, Integer> mapTSToApi(Map<String, Integer> mapTSControlToId, String currentLocoEngine)
-  {
-    Map<String, String> mapApiToTSControl = this.client.getMapping(currentLocoEngine);
-    Map<Control, Integer> mapApiToId = new HashMap();
+  private void map(String mapping, Map<Control, Integer> mapApiToId, Map<String, Integer> mapTSControlToId ) {
+    Map<String, String> mapApiToTSControl = this.client.getMapping(mapping);
     for (String keyApi : mapApiToTSControl.keySet())
     {
       String keyTS = (String)mapApiToTSControl.get(keyApi);
@@ -45,6 +43,14 @@ public class DefaultTrainSimulator
         mapApiToId.put(control, id);
       }
     }
+  }
+  
+  private Map<Control, Integer> mapTSToApi(Map<String, Integer> mapTSControlToId, String currentLocoEngine)
+  {
+    Map<Control, Integer> mapApiToId = new HashMap<Control,Integer>();
+    map("default", mapApiToId, mapTSControlToId);
+    map(currentLocoEngine, mapApiToId, mapTSControlToId);
+    
     for (String keyTS : mapTSControlToId.keySet())
     {
       Control control = Control.fromString(keyTS);
