@@ -1,0 +1,12 @@
+PZB_B40=PZB_40
+PZB_500Hz=PZB_500
+PZB_1000Hz=PZB_1000
+SifaLight=VigilLight
+SifaAlarm=VigilAlarm
+SifaLampe=VigilLight
+SifaOnOff=VigilEnable
+SifaWarnung=VigilAlarm
+CWXSIFAEIN=VigilEnable
+CWXSIFALampe=VigilLight
+CWXSIFATon=VigilAlarm
+CWXSIFAReset=VigilReset
