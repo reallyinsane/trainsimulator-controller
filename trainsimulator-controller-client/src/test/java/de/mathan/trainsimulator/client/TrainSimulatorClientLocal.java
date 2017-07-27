@@ -5,7 +5,7 @@ import java.util.Map;
 
 import de.mathan.trainsimulator.client.internal.TrainSimulatorRSClient;
 import de.mathan.trainsimulator.model.Control;
-import de.mathan.trainsimulator.model.TrainSimulator;
+import de.mathan.trainsimulator.model.Info;
 
 public class TrainSimulatorClientLocal{
 	
@@ -15,7 +15,7 @@ public class TrainSimulatorClientLocal{
 
 	public static void main(String[] args) throws Exception {
 		final TrainSimulatorRSClient ts = new TrainSimulatorRSClient("localhost", 13913);
-		TrainSimulator trainsimulator = ts.getInfo();
+		Info trainsimulator = ts.getInfo();
 		System.out.println(trainsimulator.getLocoName());
 		List<Control> controls = trainsimulator.getControls();
 		System.out.println("=====");

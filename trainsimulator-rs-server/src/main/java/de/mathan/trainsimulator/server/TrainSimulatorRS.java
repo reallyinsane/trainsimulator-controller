@@ -14,7 +14,6 @@ import java.util.StringTokenizer;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -23,8 +22,8 @@ import javax.ws.rs.core.MediaType;
 
 import de.mathan.trainsimulator.TrainSimulatorService;
 import de.mathan.trainsimulator.model.Control;
+import de.mathan.trainsimulator.model.Info;
 import de.mathan.trainsimulator.model.Mapping;
-import de.mathan.trainsimulator.model.TrainSimulator;
 import de.mathan.trainsimulator.server.internal.NativeLibrary;
 
 /**
@@ -41,42 +40,13 @@ public class TrainSimulatorRS implements TrainSimulatorService{
   @GET
   @Path("/info")
   @Produces(MediaType.APPLICATION_JSON)
-  public TrainSimulator getInfo() {
-    TrainSimulator ts = new TrainSimulator();
+  public Info getInfo() {
+    Info ts = new Info();
     ts.setCombindedThrottleBrake(nativeLibrary.GetRailSimCombinedThrottleBrake());
     ts.setLocoName(nativeLibrary.GetLocoName());
     ts.getControls().addAll(getControls());
     return ts;
   }
-
-	@GET
-	@Path("/list")
-	@Deprecated
-	public String getControllerList() {
-		return nativeLibrary.GetControllerList();
-	}
-	
-	private List<Control> getControls() {
-	  synchronized (cacheMap) {
-	    cacheMap.clear();
-	    List<Control> list = new ArrayList<Control>();
-	    String result=nativeLibrary.GetControllerList();
-	    if(result!=null) {
-	      StringTokenizer tokenizer = new StringTokenizer(result, "::");
-	      int index = 0;
-	      while (tokenizer.hasMoreTokens()) {
-	        String token = tokenizer.nextToken();
-	        Control c = new Control();
-	        int id = index++;
-	        c.setId(id);
-	        c.setName(token);
-	        list.add(c);
-	        cacheMap.put(id, c);
-	      }	  
-	    }
-	    return list;
-    }
-	}
 
   @GET
   @Path("/control/{controllerId}")
@@ -95,20 +65,6 @@ public class TrainSimulatorRS implements TrainSimulatorService{
     control.setMaximum(nativeLibrary.GetControllerValue(controller, 2));
     return control;
   }
-	
-	@GET
-	@Path("/controller/{controllerId}")
-  @Deprecated
-	public String getControllerValue(@PathParam("controllerId") int controller, @QueryParam("type") int type) {
-		return String.valueOf(nativeLibrary.GetControllerValue(controller, type));
-	}
-
-	@PUT
-	@Path("/controller/{controllerId}")
-  @Deprecated
-	public void setControllerValue(@PathParam("controllerId") int controller, @QueryParam("value") float value) {
-		nativeLibrary.SetControllerValue(controller, value);
-	}
 	
 	@GET
 	@Path("/map")
@@ -133,46 +89,25 @@ public class TrainSimulatorRS implements TrainSimulatorService{
     return mapping;
 	}
     
-	@GET
-	@Path("/mapping")
-  @Deprecated
-	public String getMappingOld(@QueryParam("loco") String loco) {
-	  File file = new File(loco+".mapping");
-	  if(file.exists()) {
-	    try {
-        Properties props = new Properties();
-        props.load(new FileInputStream(file));
-        StringBuilder sb = new StringBuilder();
-        for(Object key:props.keySet()) {
-          if(sb.length()>0) {
-            sb.append(';');
-          }
-          sb.append((String)key).append('=').append(props.getProperty((String) key));
-        }
-        return sb.toString();
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-        return "";
-      } catch (IOException e) {
-        e.printStackTrace();
-        return "";
+  private List<Control> getControls() {
+    synchronized (cacheMap) {
+      cacheMap.clear();
+      List<Control> list = new ArrayList<Control>();
+      String result=nativeLibrary.GetControllerList();
+      if(result!=null) {
+        StringTokenizer tokenizer = new StringTokenizer(result, "::");
+        int index = 0;
+        while (tokenizer.hasMoreTokens()) {
+          String token = tokenizer.nextToken();
+          Control c = new Control();
+          int id = index++;
+          c.setId(id);
+          c.setName(token);
+          list.add(c);
+          cacheMap.put(id, c);
+        }   
       }
-	  }
-	  return "";
-	}
-	
-	@GET
-	@Path("/loconame")
-  @Deprecated
-	public String getLocoName() {
-		return nativeLibrary.GetLocoName();
-	}
-
-	@GET
-	@Path("/combinedThrottleBrake")
-  @Deprecated
-	public String isCombinedThrottleBrake() {
-		return Boolean.toString(nativeLibrary.GetRailSimCombinedThrottleBrake());
-	}
-	
+      return list;
+    }
+  }
 }

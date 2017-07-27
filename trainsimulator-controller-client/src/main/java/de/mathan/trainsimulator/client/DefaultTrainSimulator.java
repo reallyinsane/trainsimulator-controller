@@ -1,7 +1,6 @@
 package de.mathan.trainsimulator.client;
 
 import de.mathan.trainsimulator.client.internal.TrainSimulatorRSClient;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,7 @@ public class DefaultTrainSimulator
 {
   private final TrainSimulatorRSClient client;
   private String currentLocoName = null;
-  private Map<Control, Integer> mapApi = new HashMap();
+  private Map<Control, Integer> mapApi = new HashMap<Control,Integer>();
   
   public DefaultTrainSimulator(String host, int port)
   {
@@ -20,7 +19,7 @@ public class DefaultTrainSimulator
   
   public String getLocoName()
   {
-    de.mathan.trainsimulator.model.TrainSimulator info = this.client.getInfo();
+    de.mathan.trainsimulator.model.Info info = this.client.getInfo();
     String locoName = info.getLocoName();
     if ((locoName != null) && (locoName.length() != 0) && (
       (this.currentLocoName == null) || (!locoName.equals(this.currentLocoName))))

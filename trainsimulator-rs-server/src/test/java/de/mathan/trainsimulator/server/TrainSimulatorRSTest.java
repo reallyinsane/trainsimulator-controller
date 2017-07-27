@@ -20,7 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import de.mathan.trainsimulator.model.Control;
 import de.mathan.trainsimulator.model.Mapping;
-import de.mathan.trainsimulator.model.TrainSimulator;
+import de.mathan.trainsimulator.model.Info;
 import de.mathan.trainsimulator.server.internal.NativeLibrary;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,13 +65,11 @@ public class TrainSimulatorRSTest extends JerseyTest{
     Mockito.when(mock.GetControllerList()).thenReturn(TEST_CONTROLLER_LIST);
   }
   
-  
-  
   @Test
   public void getInfo() {
     Response response = target("/trainsimulator/info").request(MediaType.APPLICATION_JSON_TYPE).get();
     Assert.assertEquals(200, response.getStatus());
-    TrainSimulator trainsimulator = response.readEntity(TrainSimulator.class);
+    Info trainsimulator = response.readEntity(Info.class);
     Assert.assertEquals(TEST_LOCO, trainsimulator.getLocoName());
     Assert.assertEquals(Boolean.TRUE, trainsimulator.isCombindedThrottleBrake());
     Assert.assertEquals(2, trainsimulator.getControls().size());

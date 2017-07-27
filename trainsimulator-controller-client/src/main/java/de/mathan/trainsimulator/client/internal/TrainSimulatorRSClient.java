@@ -12,7 +12,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.mathan.trainsimulator.TrainSimulatorService;
 import de.mathan.trainsimulator.model.Control;
 import de.mathan.trainsimulator.model.Mapping;
-import de.mathan.trainsimulator.model.TrainSimulator;
+import de.mathan.trainsimulator.model.Info;
 
 
 public class TrainSimulatorRSClient implements TrainSimulatorService {
@@ -29,8 +29,8 @@ public class TrainSimulatorRSClient implements TrainSimulatorService {
     client.register(JacksonJaxbJsonProvider.class);
   }
   
-  public TrainSimulator getInfo() {
-    return this.client.target(baseUrl()+"info").request(MediaType.APPLICATION_JSON).get(TrainSimulator.class);
+  public Info getInfo() {
+    return this.client.target(baseUrl()+"info").request(MediaType.APPLICATION_JSON).get(Info.class);
   }
   
   public Mapping getMapping(String loco) {

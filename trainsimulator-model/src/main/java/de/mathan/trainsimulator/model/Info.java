@@ -6,7 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class TrainSimulator {
+public class Info {
 
   private String locoName;
   private boolean combindedThrottleBrake;
