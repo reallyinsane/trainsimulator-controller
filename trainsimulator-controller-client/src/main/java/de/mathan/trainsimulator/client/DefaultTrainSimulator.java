@@ -3,6 +3,7 @@ package de.mathan.trainsimulator.client;
 import de.mathan.trainsimulator.client.internal.TrainSimulatorRSClient;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DefaultTrainSimulator
@@ -10,7 +11,7 @@ public class DefaultTrainSimulator
 {
   private final TrainSimulatorRSClient client;
   private String currentLocoName = null;
-  private Map<Control, Integer> mapApiControlToId = new HashMap();
+  private Map<Control, Integer> mapApi = new HashMap();
   
   public DefaultTrainSimulator(String host, int port)
   {
@@ -19,46 +20,50 @@ public class DefaultTrainSimulator
   
   public String getLocoName()
   {
-    String locoName = this.client.getLocoName();
+    de.mathan.trainsimulator.model.TrainSimulator info = this.client.getInfo();
+    String locoName = info.getLocoName();
     if ((locoName != null) && (locoName.length() != 0) && (
       (this.currentLocoName == null) || (!locoName.equals(this.currentLocoName))))
     {
       this.currentLocoName = locoName;
       String currentLocoEngine = locoName.substring(locoName.lastIndexOf(".:.") + 3);
-      Map<String, Integer> mapTSControlToId = this.client.getControllerList();
-      this.mapApiControlToId = mapTSToApi(mapTSControlToId, currentLocoEngine);
-      System.out.println(this.mapApiControlToId);
+      List<de.mathan.trainsimulator.model.Control> controls = info.getControls();
+      Map<String, Integer> mapTSControlToId = new HashMap<String, Integer>();
+      for(de.mathan.trainsimulator.model.Control control:controls) {
+        mapTSControlToId.put(control.getName(), control.getId());
+      }
+      this.mapApi = mapTSToApi(mapTSControlToId, currentLocoEngine);
+      System.out.println(this.mapApi);
     }
     return locoName;
   }
   
-  private void map(String mapping, Map<Control, Integer> mapApiToId, Map<String, Integer> mapTSControlToId ) {
-    Map<String, String> mapApiToTSControl = this.client.getMapping(mapping);
-    for (String keyApi : mapApiToTSControl.keySet())
-    {
-      String keyTS = (String)mapApiToTSControl.get(keyApi);
-      Integer id = (Integer)mapTSControlToId.get(keyTS);
+  private void map(String mapping, Map<Control, Integer> mapApi, Map<String, Integer> mapCurrent ) {
+    Map<String, String> mapControls = this.client.getMapping(mapping).getEntries();
+    for(String keyControl:mapControls.keySet()) {
+      String keyApi=mapControls.get(keyControl);
+      Integer id = (Integer) mapCurrent.get(keyControl);
       Control control = Control.fromString(keyApi);
-      if (control != null) {
-        mapApiToId.put(control, id);
+      if(id!=null&&control!=null) {
+        mapApi.put(control, id);
       }
     }
   }
   
-  private Map<Control, Integer> mapTSToApi(Map<String, Integer> mapTSControlToId, String currentLocoEngine)
+  private Map<Control, Integer> mapTSToApi(Map<String, Integer> mapCurrent, String currentLocoEngine)
   {
-    Map<Control, Integer> mapApiToId = new HashMap<Control,Integer>();
-    map("default", mapApiToId, mapTSControlToId);
-    map(currentLocoEngine, mapApiToId, mapTSControlToId);
+    Map<Control, Integer> mapApi = new HashMap<Control,Integer>();
+    map("default", mapApi, mapCurrent);
+    map(currentLocoEngine, mapApi, mapCurrent);
     
-    for (String keyTS : mapTSControlToId.keySet())
+    for (String keyTS : mapCurrent.keySet())
     {
       Control control = Control.fromString(keyTS);
       if (control != null) {
-        mapApiToId.put(control, mapTSControlToId.get(keyTS));
+        mapApi.put(control, mapCurrent.get(keyTS));
       }
     }
-    return mapApiToId;
+    return mapApi;
   }
   
   public boolean is(Control control)
@@ -80,7 +85,17 @@ public class DefaultTrainSimulator
       System.out.println(String.format("WARNING: Cannot read value of control %s, control is not available.", new Object[] { control }));
       return null;
     }
-    return Float.valueOf(this.client.getControllerValue(id.intValue(), type.getValue().intValue()));
+    de.mathan.trainsimulator.model.Control c = this.client.getControl(id.intValue());
+    switch(type) {
+    case Actual:
+      return c.getCurrent();
+    case Minimum:
+      return c.getMinimum();
+    case Maximum:
+      return c.getMaximum();
+    default:
+      throw new IllegalArgumentException();
+    }
   }
   
   public void press(Control control)
@@ -110,7 +125,7 @@ public class DefaultTrainSimulator
   
   protected Integer getIdForControl(Control control)
   {
-    return (Integer)this.mapApiControlToId.get(control);
+    return (Integer)this.mapApi.get(control);
   }
   
   public boolean has(Control control)
