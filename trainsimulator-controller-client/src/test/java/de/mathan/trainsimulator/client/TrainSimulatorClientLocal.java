@@ -1,8 +1,11 @@
 package de.mathan.trainsimulator.client;
 
+import java.util.List;
 import java.util.Map;
 
 import de.mathan.trainsimulator.client.internal.TrainSimulatorRSClient;
+import de.mathan.trainsimulator.model.Control;
+import de.mathan.trainsimulator.model.TrainSimulator;
 
 public class TrainSimulatorClientLocal{
 	
@@ -12,21 +15,16 @@ public class TrainSimulatorClientLocal{
 
 	public static void main(String[] args) throws Exception {
 		final TrainSimulatorRSClient ts = new TrainSimulatorRSClient("localhost", 13913);
-		Map<String, Integer> controller = ts.getControllerList();
-		int index=0;
+		TrainSimulator trainsimulator = ts.getInfo();
+		System.out.println(trainsimulator.getLocoName());
+		List<Control> controls = trainsimulator.getControls();
 		System.out.println("=====");
-		for(String c:controller.keySet()) {
-		  System.out.println((index++)+"\t"+c+"\t"+ts.getControllerValue(controller.get(c), 0)+"\t"+ts.getControllerValue(controller.get(c), 1)+"\t"+ts.getControllerValue(controller.get(c), 2));
+		for(Control control:controls) {
+		  control = ts.getControl(control.getId());
+		  System.out.println(String.format("%s\t%s\t%s\t%s\t%s", control.getId(), control.getName(), control.getCurrent(), control.getMinimum(), control.getMaximum()));
 		}
     System.out.println("=====");
 		System.in.read();
-		ts.setControllerValue(22, 1f);
-    System.out.println("=====");
-    for(String c:controller.keySet()) {
-      System.out.println(c+"\t"+ts.getControllerValue(controller.get(c), 0));
-    }
-    System.out.println("=====");
-		
 	}
 
 }

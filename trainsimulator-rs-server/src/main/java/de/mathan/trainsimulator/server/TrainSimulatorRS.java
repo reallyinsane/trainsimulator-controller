@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -21,7 +23,6 @@ import javax.ws.rs.core.MediaType;
 
 import de.mathan.trainsimulator.TrainSimulatorService;
 import de.mathan.trainsimulator.model.Control;
-import de.mathan.trainsimulator.model.ControlList;
 import de.mathan.trainsimulator.model.Mapping;
 import de.mathan.trainsimulator.model.TrainSimulator;
 import de.mathan.trainsimulator.server.internal.NativeLibrary;
@@ -44,7 +45,7 @@ public class TrainSimulatorRS implements TrainSimulatorService{
     TrainSimulator ts = new TrainSimulator();
     ts.setCombindedThrottleBrake(nativeLibrary.GetRailSimCombinedThrottleBrake());
     ts.setLocoName(nativeLibrary.GetLocoName());
-    ts.getControls().addAll(getControls().getControls());
+    ts.getControls().addAll(getControls());
     return ts;
   }
 
@@ -55,13 +56,10 @@ public class TrainSimulatorRS implements TrainSimulatorService{
 		return nativeLibrary.GetControllerList();
 	}
 	
-	@GET
-	@Path("/controls")
-	@Produces(MediaType.APPLICATION_JSON)
-	public ControlList getControls() {
+	private List<Control> getControls() {
 	  synchronized (cacheMap) {
 	    cacheMap.clear();
-	    ControlList list = new ControlList();
+	    List<Control> list = new ArrayList<Control>();
 	    String result=nativeLibrary.GetControllerList();
 	    if(result!=null) {
 	      StringTokenizer tokenizer = new StringTokenizer(result, "::");
@@ -72,12 +70,11 @@ public class TrainSimulatorRS implements TrainSimulatorService{
 	        int id = index++;
 	        c.setId(id);
 	        c.setName(token);
-	        list.getControls().add(c);
+	        list.add(c);
 	        cacheMap.put(id, c);
 	      }	  
 	    }
 	    return list;
-      
     }
 	}
 

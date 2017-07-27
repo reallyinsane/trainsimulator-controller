@@ -119,7 +119,8 @@ public class DefaultTrainSimulator
     if (id == null) {
       System.out.println(String.format("WARNING: Cannot set value for control %s, control is not available.", new Object[] { control }));
     } else {
-      this.client.setControllerValue(id.intValue(), value);
+      //TODO
+      //this.client.setControllerValue(id.intValue(), value);
     }
   }
   
