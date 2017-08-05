@@ -71,6 +71,7 @@ public class TrayApp {
   };
 
   private int trayIconWidth;
+  private Configuration configuration;
 
   protected void setState(BufferedImage ico, String message) {
     icon.setImage(ico.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH));
@@ -90,7 +91,7 @@ public class TrayApp {
   private void start() {
     try {
       String location = NativeLibraryFactory.getDllLocation();
-      if(!location.isEmpty()&&TrainSimulatorServer.start()) {
+      if(!location.isEmpty()&&TrainSimulatorServer.start(configuration)) {
         setState(icoActive, RUNNING);
       }
     } catch (Exception e1) {
@@ -99,7 +100,8 @@ public class TrayApp {
     }
   }
 
-  public TrayApp() throws IOException, AWTException {
+  public TrayApp(Configuration configuration) throws IOException, AWTException {
+    this.configuration = configuration;
     trayIconWidth = new TrayIcon(icoDefault).getSize().width;
     icon= new TrayIcon(icoDefault.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH), tooltip(NOT_RUNNING));
     PopupMenu menu = new PopupMenu();
@@ -114,10 +116,11 @@ public class TrayApp {
     icon.setPopupMenu(menu);
     SystemTray.getSystemTray().add(icon);
     start();
-    new UdpMulticastServer().start();
+    new UdpMulticastServer(configuration).start();
   }
 
   public static void main(String[] args) throws IOException, AWTException {
-    new TrayApp();
+    Configuration configuration = new Configuration();
+    new TrayApp(configuration);
   }
 }

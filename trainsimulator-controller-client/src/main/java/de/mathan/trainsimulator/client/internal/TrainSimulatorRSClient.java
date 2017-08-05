@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 import de.mathan.trainsimulator.TrainSimulatorService;
+import de.mathan.trainsimulator.client.Configuration;
 import de.mathan.trainsimulator.model.Control;
 import de.mathan.trainsimulator.model.Mapping;
 import de.mathan.trainsimulator.model.Info;
@@ -17,14 +18,11 @@ import de.mathan.trainsimulator.model.Info;
 
 public class TrainSimulatorRSClient implements TrainSimulatorService {
 
-  private final String host;
-  private final int port;
   private final Client client;
+  private Configuration configuration;
 
-  public TrainSimulatorRSClient(String host, int port)
-  {
-    this.host = host;
-    this.port = port;
+  public TrainSimulatorRSClient(Configuration configuration) {
+    this.configuration = configuration;
     client =ClientBuilder.newClient();
     client.register(JacksonJaxbJsonProvider.class);
   }
@@ -43,6 +41,6 @@ public class TrainSimulatorRSClient implements TrainSimulatorService {
 
   private String baseUrl() {
     return String.format("http://%s:%s/trainsimulator/",
-        new Object[] { this.host, Integer.valueOf(this.port) });
+        new Object[] { configuration.getRestHost(), Integer.valueOf(configuration.getRestPort()) });
   }
 }

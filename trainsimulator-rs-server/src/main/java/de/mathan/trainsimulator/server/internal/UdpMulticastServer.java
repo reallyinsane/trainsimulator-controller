@@ -6,16 +6,19 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import de.mathan.trainsimulator.server.Configuration;
+
 public class UdpMulticastServer
   extends Thread
 {
   private DatagramSocket socket = null;
-  InetAddress group = InetAddress.getByName("224.13.9.13");
+  private final InetAddress group ;
+  private Configuration configuration;
   
-  public UdpMulticastServer()
-    throws IOException
-  {
-    this.socket = new DatagramSocket(13912);
+  public UdpMulticastServer(Configuration configuration) throws IOException {
+    this.configuration = configuration;
+    this.group = InetAddress.getByName(configuration.getMulticastHost());
+    this.socket = new DatagramSocket(configuration.getMulticastPort());
   }
   
   public void run()
@@ -24,9 +27,8 @@ public class UdpMulticastServer
     {
       try
       {
-        String localIP = InetAddress.getLocalHost().getHostAddress();
         byte[] data = "TrainSimulator".getBytes();
-        DatagramPacket packet = new DatagramPacket(data, data.length, this.group, 13912);
+        DatagramPacket packet = new DatagramPacket(data, data.length, this.group, configuration.getMulticastPort());
         this.socket.send(packet);
       }
       catch (UnknownHostException e)

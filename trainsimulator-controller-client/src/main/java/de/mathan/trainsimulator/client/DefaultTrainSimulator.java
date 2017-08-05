@@ -1,20 +1,21 @@
 package de.mathan.trainsimulator.client;
 
-import de.mathan.trainsimulator.client.internal.TrainSimulatorRSClient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.mathan.trainsimulator.TrainSimulatorService;
+
 public class DefaultTrainSimulator
   implements TrainSimulator
 {
-  private final TrainSimulatorRSClient client;
+  private final TrainSimulatorService client;
   private String currentLocoName = null;
   private Map<Control, Integer> mapApi = new HashMap<Control,Integer>();
   
-  public DefaultTrainSimulator(String host, int port)
+  public DefaultTrainSimulator(TrainSimulatorService service)
   {
-    this.client = new TrainSimulatorRSClient(host, port);
+    this.client = service;
   }
   
   public String getLocoName()

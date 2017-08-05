@@ -14,7 +14,10 @@ public class TrainSimulatorClientLocal{
 	public static final String SIFA_RESET="VigilReset";
 
 	public static void main(String[] args) throws Exception {
-		final TrainSimulatorRSClient ts = new TrainSimulatorRSClient("localhost", 13913);
+	  Configuration configuration = new Configuration();
+	  configuration.setRestHost("localhost");
+	  configuration.setRestPort(13913);
+		final TrainSimulatorRSClient ts = new TrainSimulatorRSClient(configuration);
 		Info trainsimulator = ts.getInfo();
 		System.out.println(trainsimulator.getLocoName());
 		List<Control> controls = trainsimulator.getControls();

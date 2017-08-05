@@ -21,12 +21,12 @@ public class TrainSimulatorServer {
 	 * @return
 	 * @throws Exception
 	 */
-	public static boolean start() throws Exception {
+	public static boolean start(Configuration configuration) throws Exception {
     NativeLibrary nativeLibrary = NativeLibraryFactory
         .getInstance();
     nativeLibrary.SetRailDriverConnected(true);
     nativeLibrary.SetRailSimConnected(true);
-    server = configureServer(nativeLibrary);
+    server = configureServer(nativeLibrary, configuration);
     server.start();
 //    server.join();
     return true;
@@ -44,7 +44,7 @@ public class TrainSimulatorServer {
 	  }
 	}
 	
-  private static Server configureServer(NativeLibrary nativeLibrary) {
+  private static Server configureServer(NativeLibrary nativeLibrary, Configuration configuration) {
     ResourceConfig resourceConfig = new ResourceConfig();   
     resourceConfig.packages(TrainSimulatorRS.class.getPackage().getName());
     resourceConfig.register(JacksonFeature.class);
@@ -57,7 +57,7 @@ public class TrainSimulatorServer {
     });
     ServletContainer servletContainer = new ServletContainer(resourceConfig);
     ServletHolder sh = new ServletHolder(servletContainer);                
-    Server server = new Server(13913);   
+    Server server = new Server(configuration.getRestPort());   
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         context.addServlet(sh, "/*");
