@@ -1,8 +1,10 @@
-package de.mathan.trainsimulator.client;
+package de.mathan.trainsimulator.model;
 
-public enum Control
-  implements ValueEnum<String>
-{
+import javax.xml.bind.annotation.XmlEnum;
+
+@XmlEnum
+public enum Controller {
+
   SifaEnabled("VigilEnable"),//
   PzbEnabled("PZBEnable"),//
   Pzb55("PZB_55"),//
@@ -21,21 +23,18 @@ public enum Control
   
   private final String value;
   
-  private Control(String value)
-  {
+  private Controller(String value) {
     this.value = value;
   }
   
-  public String getValue()
-  {
+  public String getValue() {
     return this.value;
   }
   
-  public static Control fromString(String value)
-  {
-    for (Control control : Control.values()) {
-      if (control.value.equals(value)) {
-        return control;
+  public static Controller fromString(String value) {
+    for (Controller controller : Controller.values()) {
+      if (controller.value.equals(value)) {
+        return controller;
       }
     }
     return null;

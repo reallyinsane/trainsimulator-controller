@@ -1,7 +1,5 @@
 package de.mathan.trainsimulator.server;
 
-import java.util.List;
-
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -18,9 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import de.mathan.trainsimulator.model.Control;
-import de.mathan.trainsimulator.model.Mapping;
-import de.mathan.trainsimulator.model.Info;
+import de.mathan.trainsimulator.model.Controller;
+import de.mathan.trainsimulator.model.ControllerValue;
+import de.mathan.trainsimulator.model.Locomotive;
 import de.mathan.trainsimulator.server.internal.NativeLibrary;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,11 +30,12 @@ public class TrainSimulatorRSTest extends JerseyTest{
   private static final Float TEST_VALUE_MAXIMUM = 2f;
   private static final Float TEST_VALUE_MINIMUM = -1f;
   private static final Float TEST_VALUE_CURRENT = 1f;
-  private static final String TEST_LOCO = "Loco";
-  private static final Integer TEST_CONTROL_1_ID =0;
-  private static final Integer TEST_CONTROL_2_ID =1;
-  private static final String TEST_CONTROL_1_NAME ="ControlOne";
-  private static final String TEST_CONTROL_2_NAME ="ControlTwo";
+  private static final String TEST_LOCO = "DTG.:.RhineValley1.:.DB BR189";
+  private static final String TEST_LOCO_ENGINE = "DB BR189";
+  private static final Integer TEST_CONTROL_1_ID = 0;
+  private static final Integer TEST_CONTROL_2_ID = 1;
+  private static final String TEST_CONTROL_1_NAME ="SifaLight";
+  private static final String TEST_CONTROL_2_NAME ="VigilAlarm";
   private static final String TEST_CONTROLLER_LIST = TEST_CONTROL_1_NAME+"::"+TEST_CONTROL_2_NAME;
   
   @Mock
@@ -66,55 +65,30 @@ public class TrainSimulatorRSTest extends JerseyTest{
   }
   
   @Test
-  public void getInfo() {
-    Response response = target("/trainsimulator/info").request(MediaType.APPLICATION_JSON_TYPE).get();
+  public void getLocomotive() {
+    Response response = target("/trainsimulator/locomotive").request(MediaType.APPLICATION_JSON_TYPE).get();
     Assert.assertEquals(200, response.getStatus());
-    Info trainsimulator = response.readEntity(Info.class);
-    Assert.assertEquals(TEST_LOCO, trainsimulator.getLocoName());
-    Assert.assertEquals(Boolean.TRUE, trainsimulator.isCombindedThrottleBrake());
-    Assert.assertEquals(2, trainsimulator.getControls().size());
-    assertControl(trainsimulator.getControls(), TEST_CONTROL_1_ID, TEST_CONTROL_1_NAME);
-    assertControl(trainsimulator.getControls(), TEST_CONTROL_2_ID, TEST_CONTROL_2_NAME);
+    Locomotive trainsimulator = response.readEntity(Locomotive.class);
+    Assert.assertEquals(TEST_LOCO_ENGINE, trainsimulator.getEngine());
+    Assert.assertEquals(Boolean.TRUE, trainsimulator.isCombinedThrottleBrake());
+    Assert.assertEquals(2, trainsimulator.getController().size());
+    Assert.assertTrue(trainsimulator.getController().contains(Controller.SifaLight));
+    Assert.assertTrue(trainsimulator.getController().contains(Controller.SifaAlarm));
   }
   
   @Test
-  public void getControl() {
+  public void getController() {
     Mockito.when(mock.GetControllerValue(TEST_CONTROL_1_ID, TYPE_CURRENT)).thenReturn(TEST_VALUE_CURRENT);
     Mockito.when(mock.GetControllerValue(TEST_CONTROL_1_ID, TYPE_MINIMUM)).thenReturn(TEST_VALUE_MINIMUM);
     Mockito.when(mock.GetControllerValue(TEST_CONTROL_1_ID, TYPE_MAXIMUM)).thenReturn(TEST_VALUE_MAXIMUM);
-    Response response = target("/trainsimulator/control/"+TEST_CONTROL_1_ID).request(MediaType.APPLICATION_JSON).get();
+    Response response = target("/trainsimulator/locomotive").request(MediaType.APPLICATION_JSON_TYPE).get();
     Assert.assertEquals(200, response.getStatus());
-    Control control = response.readEntity(Control.class);
-    Assert.assertEquals(TEST_CONTROL_1_ID, control.getId());
-    Assert.assertEquals(TEST_CONTROL_1_NAME, control.getName());
-    Assert.assertEquals(TEST_VALUE_CURRENT, control.getCurrent());
-    Assert.assertEquals(TEST_VALUE_MINIMUM, control.getMinimum());
-    Assert.assertEquals(TEST_VALUE_MAXIMUM, control.getMaximum());
+    response = target("/trainsimulator/controller/"+Controller.SifaLight.getValue()).request(MediaType.APPLICATION_JSON).get();
+    Assert.assertEquals(200, response.getStatus());
+    ControllerValue value = response.readEntity(ControllerValue.class);
+    Assert.assertEquals(TEST_VALUE_CURRENT, value.getCurrent());
+    Assert.assertEquals(TEST_VALUE_MINIMUM, value.getMinimum());
+    Assert.assertEquals(TEST_VALUE_MAXIMUM, value.getMaximum());
   }
   
-  @Test
-  public void getDefaultMapping() {
-    Response response = target("/trainsimulator/map").queryParam("loco", "default").request(MediaType.APPLICATION_JSON).get();
-    Assert.assertEquals(200, response.getStatus());
-    Mapping mapping= response.readEntity(Mapping.class);
-    assertMapping(mapping, "PZB_B40", "PZB_40");
-    assertMapping(mapping, "PZB_500Hz", "PZB_500");
-    assertMapping(mapping, "PZB_1000Hz", "PZB_1000");
-    assertMapping(mapping, "SifaLight", "VigilLight");
-    assertMapping(mapping, "SifaAlarm", "VigilAlarm");
-  }
-  
-  private void assertMapping(Mapping mapping, String specific, String common) {
-    Assert.assertTrue(String.format("specific mapping %s for control %s missing", specific, common),  mapping.getEntries().containsKey(specific));
-    Assert.assertEquals(String.format("specific mapping %s for control %s is wrong and points to control %s",specific, common, mapping.getEntries().get(specific)), common, mapping.getEntries().get(specific));
-  }
-
-  private void assertControl(List<Control> controls, int id, String name) {
-    for(Control control:controls) {
-      if(control.getId().intValue()==id&&name.equals(control.getName())) {
-        return;
-      }
-    }
-    Assert.fail(String.format("No control with id=%s and name=%s found. But found %s",  id, name, controls));
-  }
 }

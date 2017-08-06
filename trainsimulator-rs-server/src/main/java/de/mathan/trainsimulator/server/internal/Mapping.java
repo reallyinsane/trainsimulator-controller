@@ -1,4 +1,4 @@
-package de.mathan.trainsimulator.model;
+package de.mathan.trainsimulator.server.internal;
 
 import java.util.HashMap;
 import java.util.Map;

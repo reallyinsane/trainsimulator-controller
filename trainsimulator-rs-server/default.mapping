@@ -10,3 +10,7 @@ CWXSIFAEIN=VigilEnable
 CWXSIFALampe=VigilLight
 CWXSIFATon=VigilAlarm
 CWXSIFAReset=VigilReset
+PZB LM 500Hz=PZB_500
+PZB LM 1000Hz=PZB_1000
+PZB LM Befehl40=PZB_40
+SifaWeg=VigilLight

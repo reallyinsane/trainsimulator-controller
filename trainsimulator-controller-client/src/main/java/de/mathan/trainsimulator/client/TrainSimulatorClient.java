@@ -14,39 +14,43 @@
  */
 package de.mathan.trainsimulator.client;
 
+import de.mathan.trainsimulator.TrainSimulatorException;
+import de.mathan.trainsimulator.TrainSimulatorService;
+import de.mathan.trainsimulator.UnsupportedControllerException;
+import de.mathan.trainsimulator.model.Controller;
 
 /**
  * The interface for clients interacting with controls from Train Simulator.
- * As not all locos support all kind of controls the enum {@link Control} is
+ * As not all locos support all kind of controls the enum {@link Controller} is
  * used to identify the control on each request.
  * 
  * @author Matthias Hanisch (reallyinsane)
  */
-public interface TrainSimulator {
-  String getLocoName();
+public interface TrainSimulatorClient extends TrainSimulatorService {
+  String getLocoName() throws TrainSimulatorException;
 
   /**
    * Returns whether the current loco supports the given control or not.
-   * @param control The control to check.
+   * @param controller The control to check.
    * @return <code>True</code> if the control is supported, <code>false</code> otherwise.
    */
-  boolean has(Control control);
+  boolean has(Controller controller);
 
   /**
    * Returns whether the state of the given control is enabled or not. This
    * should be called for &quot;boolean&quot; controls only. Also check if the control
-   * is supported in advance using {@link #has(Control)}.
-   * @param control The control to check.
+   * is supported in advance using {@link #has(Controller )}.
+   * @param controller The control to check.
    * @return <code>True</code> if the state of the control is enabled, <code>false</code> otherwise.
-   * @throws UnsupportedControlException If the control is not supported. (See {@link #has(Control)})  
+   * @throws UnsupportedControllerException If the control is not supported. (See {@link #has(Controller)})  
    */
-  boolean is(Control control) throws UnsupportedControlException;
+  boolean is(Controller controller) throws UnsupportedControllerException, TrainSimulatorException;
 
-  Float get(Control control) throws UnsupportedControlException;
+  Float get(Controller controller) throws UnsupportedControllerException, TrainSimulatorException;
 
-  Float get(Control control, Type type) throws UnsupportedControlException;
+  Float get(Controller controller, Type type) throws UnsupportedControllerException, TrainSimulatorException;
 
-  void press(Control control) throws UnsupportedControlException;
+  void press(Controller controller) throws UnsupportedControllerException, TrainSimulatorException;
 
-  void set(Control control, boolean enable) throws UnsupportedControlException;
+  void set(Controller controller, boolean enable) throws UnsupportedControllerException, TrainSimulatorException;
 }

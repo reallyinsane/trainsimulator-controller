@@ -1,19 +1,18 @@
 package de.mathan.trainsimulator.client.internal;
 
-import java.util.Collections;
-import java.util.Map;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
+import de.mathan.trainsimulator.TrainSimulatorException;
 import de.mathan.trainsimulator.TrainSimulatorService;
 import de.mathan.trainsimulator.client.Configuration;
-import de.mathan.trainsimulator.model.Control;
-import de.mathan.trainsimulator.model.Mapping;
-import de.mathan.trainsimulator.model.Info;
+import de.mathan.trainsimulator.model.Controller;
+import de.mathan.trainsimulator.model.ControllerValue;
+import de.mathan.trainsimulator.model.Locomotive;
+import de.mathan.trainsimulator.model.generic.GenericLocomotive;
 
 
 public class TrainSimulatorRSClient implements TrainSimulatorService {
@@ -27,18 +26,20 @@ public class TrainSimulatorRSClient implements TrainSimulatorService {
     client.register(JacksonJaxbJsonProvider.class);
   }
   
-  public Info getInfo() {
-    return this.client.target(baseUrl()+"info").request(MediaType.APPLICATION_JSON).get(Info.class);
+  public Locomotive getLocomotive() {
+    return this.client.target(baseUrl()+"locomotive").request(MediaType.APPLICATION_JSON).get(Locomotive.class);
   }
   
-  public Mapping getMapping(String loco) {
-    return this.client.target(baseUrl()+"map").queryParam("loco", loco).request(MediaType.APPLICATION_JSON).get(Mapping.class);
-  }
-  
-  public Control getControl(int controllerId) {
-    return this.client.target(baseUrl()+"control/"+controllerId).request(MediaType.APPLICATION_JSON).get(Control.class);
+  @Override
+  public GenericLocomotive getGenericLocomotive()
+      throws TrainSimulatorException {
+    return this.client.target(baseUrl()+"generic").request(MediaType.APPLICATION_JSON).get(GenericLocomotive.class);
   }
 
+  public ControllerValue getControllerValue(Controller controller) {
+    return this.client.target(baseUrl()+"controller/"+controller.getValue()).request(MediaType.APPLICATION_JSON).get(ControllerValue.class);
+  }
+  
   private String baseUrl() {
     return String.format("http://%s:%s/trainsimulator/",
         new Object[] { configuration.getRestHost(), Integer.valueOf(configuration.getRestPort()) });
