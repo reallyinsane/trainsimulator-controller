@@ -5,9 +5,9 @@ import java.util.List;
 
 import de.mathan.trainsimulator.TrainSimulatorException;
 import de.mathan.trainsimulator.TrainSimulatorService;
-import de.mathan.trainsimulator.UnsupportedControllerException;
-import de.mathan.trainsimulator.model.Controller;
-import de.mathan.trainsimulator.model.ControllerValue;
+import de.mathan.trainsimulator.UnsupportedControlException;
+import de.mathan.trainsimulator.model.Control;
+import de.mathan.trainsimulator.model.ControlValue;
 import de.mathan.trainsimulator.model.Locomotive;
 import de.mathan.trainsimulator.model.generic.GenericLocomotive;
 
@@ -16,7 +16,7 @@ public class DefaultTrainSimulatorClient
 {
   private final TrainSimulatorService client;
   private String currentLocoName = null;
-  private List<Controller> availableController = new ArrayList<>();
+  private List<Control> availableControls = new ArrayList<>();
   
   public DefaultTrainSimulatorClient(TrainSimulatorService service) {
     this.client = service;
@@ -40,38 +40,38 @@ public class DefaultTrainSimulatorClient
       (this.currentLocoName == null) || (!locoName.equals(this.currentLocoName))))
     {
       this.currentLocoName = locoName;
-      availableController = locomotive.getController();
-      System.out.println(this.availableController);
+      availableControls = locomotive.getControls();
+      System.out.println(this.availableControls);
     }
     return locoName;
   }
   
-  public boolean is(Controller controller) throws UnsupportedControllerException, TrainSimulatorException {
-    if(!has(controller)) {
-      throw new UnsupportedControllerException(controller);
+  public boolean is(Control control) throws UnsupportedControlException, TrainSimulatorException {
+    if(!has(control)) {
+      throw new UnsupportedControlException(control);
     }
-    Float value = get(controller);
+    Float value = get(control);
     return Float.valueOf(1.0F).equals(value);
   }
   
-  public Float get(Controller controller) throws UnsupportedControllerException, TrainSimulatorException {
-    if(!has(controller)) {
-      throw new UnsupportedControllerException(controller);
+  public Float get(Control control) throws UnsupportedControlException, TrainSimulatorException {
+    if(!has(control)) {
+      throw new UnsupportedControlException(control);
     }
-    return get(controller, Type.Actual);
+    return get(control, Type.Actual);
   }
   
   @Override
-  public ControllerValue getControllerValue(Controller controller)
-      throws TrainSimulatorException, UnsupportedControllerException {
-    return this.client.getControllerValue(controller);
+  public ControlValue getControlValue(Control control)
+      throws TrainSimulatorException, UnsupportedControlException {
+    return this.client.getControlValue(control);
   }
   
-  public Float get(Controller controller, Type type) throws UnsupportedControllerException, TrainSimulatorException {
-    if(!has(controller)) {
-      throw new UnsupportedControllerException(controller);
+  public Float get(Control control, Type type) throws UnsupportedControlException, TrainSimulatorException {
+    if(!has(control)) {
+      throw new UnsupportedControlException(control);
     }
-    ControllerValue value = getControllerValue(controller);
+    ControlValue value = getControlValue(control);
     if(value==null) {
       return null;
     }
@@ -87,36 +87,36 @@ public class DefaultTrainSimulatorClient
     }
   }
   
-  public void press(Controller controller) throws UnsupportedControllerException, TrainSimulatorException {
-    if(!has(controller)) {
-      throw new UnsupportedControllerException(controller);
+  public void press(Control control) throws UnsupportedControlException, TrainSimulatorException {
+    if(!has(control)) {
+      throw new UnsupportedControlException(control);
     }
-    set(controller, true);
-    set(controller, false);
+    set(control, true);
+    set(control, false);
   }
   
-  public void set(Controller controller, boolean value) throws UnsupportedControllerException, TrainSimulatorException {
-    if(!has(controller)) {
-      throw new UnsupportedControllerException(controller);
+  public void set(Control control, boolean value) throws UnsupportedControlException, TrainSimulatorException {
+    if(!has(control)) {
+      throw new UnsupportedControlException(control);
     }
     if (value) {
-      set(controller, 1.0F);
+      set(control, 1.0F);
     } else {
-      set(controller, 0.0F);
+      set(control, 0.0F);
     }
   }
   
-  protected void set(Controller controller, float value) throws UnsupportedControllerException, TrainSimulatorException {
-//    Integer id = getIdForControl(controller);
+  protected void set(Control control, float value) throws UnsupportedControlException, TrainSimulatorException {
+//    Integer id = getIdForControl(control);
 //    if (id == null) {
-//      System.out.println(String.format("WARNING: Cannot set value for control %s, control is not available.", new Object[] { controller }));
+//      System.out.println(String.format("WARNING: Cannot set value for control %s, control is not available.", new Object[] { control }));
 //    } else {
       //TODO
-      //this.client.setControllerValue(id.intValue(), value);
+      //this.client.control(id.intValue(), value);
 //    }
   }
   
-  public boolean has(Controller controller) {
-    return availableController.contains(controller);
+  public boolean has(Control control) {
+    return availableControls.contains(control);
   }
 }

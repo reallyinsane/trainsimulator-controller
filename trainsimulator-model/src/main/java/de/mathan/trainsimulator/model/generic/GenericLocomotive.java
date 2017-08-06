@@ -12,13 +12,13 @@ public class GenericLocomotive {
   private String product;
   private String engine;
   private boolean combinedThrottleBrake;  
-  private List<GenericController> controller = new ArrayList<>();
+  private List<GenericControl> controls = new ArrayList<>();
 
   public GenericLocomotive() {
   }
   
-  public List<GenericController> getController() {
-    return controller;
+  public List<GenericControl> getControls() {
+    return controls;
   }
   
   public String getEngine() {

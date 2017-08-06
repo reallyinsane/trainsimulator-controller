@@ -1,25 +1,39 @@
 package de.mathan.trainsimulator.server.internal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class Mapping {
+  
+  private Map<String, String> simpleMapping = new HashMap<>();
+  private Map<String, List<VirtualMapping>> virtualMapping = new HashMap<>();
 
-  private String name;
-  private Map<String, String> entries = new HashMap<>();
-  
-  public String getName() {
-    return name;
+  public Mapping() {
   }
   
-  public void setName(String name) {
-    this.name = name;
+  public Map<String, String> getSimpleMapping() {
+    return simpleMapping;
   }
   
-  public Map<String, String> getEntries() {
-    return this.entries;
+  public Map<String, List<VirtualMapping>> getVirtualMapping() {
+    return virtualMapping;
+  }
+
+  public static class VirtualMapping {
+    private final String name;
+    private final Float value;
+    public VirtualMapping(String name, Float value) {
+      this.name = name;
+      this.value = value;
+    }
+    
+    public String getName() {
+      return name;
+    }
+    
+    public Float getValue() {
+      return value;
+    }
   }
 }

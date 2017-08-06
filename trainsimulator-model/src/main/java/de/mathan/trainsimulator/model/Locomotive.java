@@ -11,14 +11,14 @@ public class Locomotive {
   private String provider;
   private String product;
   private String engine;
-  private List<Controller> controller = new ArrayList<>();
+  private List<Control> controls = new ArrayList<>();
   private boolean combinedThrottleBrake;
 
   public Locomotive() {
   }
   
-  public List<Controller> getController() {
-    return controller;
+  public List<Control> getControls() {
+    return controls;
   }
   
   public String getEngine() {

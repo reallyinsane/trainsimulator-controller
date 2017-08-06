@@ -3,7 +3,7 @@ package de.mathan.trainsimulator.model;
 import javax.xml.bind.annotation.XmlEnum;
 
 @XmlEnum
-public enum Controller {
+public enum Control {
 
   SifaEnabled("VigilEnable"),//
   PzbEnabled("PZBEnable"),//
@@ -23,7 +23,7 @@ public enum Controller {
   
   private final String value;
   
-  private Controller(String value) {
+  private Control(String value) {
     this.value = value;
   }
   
@@ -31,10 +31,10 @@ public enum Controller {
     return this.value;
   }
   
-  public static Controller fromString(String value) {
-    for (Controller controller : Controller.values()) {
-      if (controller.value.equals(value)) {
-        return controller;
+  public static Control fromString(String value) {
+    for (Control control : Control.values()) {
+      if (control.value.equals(value)) {
+        return control;
       }
     }
     return null;

@@ -14,4 +14,54 @@ After start a new systray icon appears. If the REST service was successfully sta
 
 ## trainsimulator-controller-client
 
-The client component provides a more readable API to access certain controls. Therfore it can connect to the running server.
+The client component provides a more readable API to access certain controls. Therefore it can connect to the running server.
+
+## Supported controls
+
+There are various controls supported by TrainSimulator. It depends on the selected engine which controls are available. There are also differences in naming of the controls. For a generic API an defined enum is used to identify the controls.
+ In general the API can be used to either display the current/minimum/maximum value of a control and to change the value of a control, e.g. for reseting the VigilAlarm or change the throttle.
+
+The following controls are supported (although there are different names for the controls in different engines, the names chosen are the common used):
+
+- Vigil controls
+    - VigilEnable
+    - VigilLight
+    - VigilAlarm
+    - VigilReset
+- PZB controls
+    - PZBEnable
+    - PZB_55
+    - PZB_70
+    - PZB_85
+    - PZB_40
+    - PZB_500
+    - PZB_1000
+    - PzbWarning
+    - Cmd_40
+    - Cmd_Free
+    - Cmd_Wachsam   
+
+### Mappings
+
+For the trainsimulator-rs-server mappings can be defined if control names of an engine differ from the API names. In the file `default.mapping` the mapping can be defined like this:
+
+    # Lines beginning with a hash sign are treated as comments.
+    # <loco control name>=<API control name>
+    #
+    # Samples
+    PZB_B40=PZB_40
+    PZB_500Hz=PZB_500
+    PZB_1000Hz=PZB_1000    
+
+#### Virtual controls
+
+In some cases the engine combine multiple controls to a single one. Different values for such a virtual control represents a &quot;real&quot; control then. Such a mapping can be defined in `default.mapping` like this:
+
+    # <loco control name>=<value>=<API control name>
+    #
+    # Samples
+    PZB LM Betrieb=1=PZB_85
+    PZB LM Betrieb=2=PZB_70
+    PZB LM Betrieb=3=PZB_55
+
+In the sample above the engine offers the control &quot;PZB LM Betrieb&quot; but not the API controls &quot;PZB_55&quot;, &quot;PZB_70&quot; and &quot;PZB_85&quot;. But each of the API contros can be mapped by the defined value for the loco control.

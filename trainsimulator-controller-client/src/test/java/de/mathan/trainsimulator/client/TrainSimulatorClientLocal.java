@@ -3,8 +3,8 @@ package de.mathan.trainsimulator.client;
 import java.util.List;
 
 import de.mathan.trainsimulator.client.internal.TrainSimulatorRSClient;
-import de.mathan.trainsimulator.model.Controller;
-import de.mathan.trainsimulator.model.ControllerValue;
+import de.mathan.trainsimulator.model.Control;
+import de.mathan.trainsimulator.model.ControlValue;
 import de.mathan.trainsimulator.model.Locomotive;
 
 public class TrainSimulatorClientLocal{
@@ -20,11 +20,11 @@ public class TrainSimulatorClientLocal{
 		final TrainSimulatorRSClient ts = new TrainSimulatorRSClient(configuration);
 		Locomotive locomotive = ts.getLocomotive();
 		System.out.println(locomotive.getEngine());
-		List<Controller> availableController = locomotive.getController();
+		List<Control> availableControls = locomotive.getControls();
 		System.out.println("=====");
-		for(Controller controller:availableController) {
-		  ControllerValue value = ts.getControllerValue(controller);
-		  System.out.println(String.format("%s\t%s\t%s\t%s", controller.getValue(), value.getCurrent(), value.getMinimum(), value.getMaximum()));
+		for(Control control:availableControls) {
+		  ControlValue value = ts.getControlValue(control);
+		  System.out.println(String.format("%s\t%s\t%s\t%s", control.getValue(), value.getCurrent(), value.getMinimum(), value.getMaximum()));
 		}
     System.out.println("=====");
 		System.in.read();

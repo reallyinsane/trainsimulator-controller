@@ -9,8 +9,8 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import de.mathan.trainsimulator.TrainSimulatorException;
 import de.mathan.trainsimulator.TrainSimulatorService;
 import de.mathan.trainsimulator.client.Configuration;
-import de.mathan.trainsimulator.model.Controller;
-import de.mathan.trainsimulator.model.ControllerValue;
+import de.mathan.trainsimulator.model.Control;
+import de.mathan.trainsimulator.model.ControlValue;
 import de.mathan.trainsimulator.model.Locomotive;
 import de.mathan.trainsimulator.model.generic.GenericLocomotive;
 
@@ -36,8 +36,8 @@ public class TrainSimulatorRSClient implements TrainSimulatorService {
     return this.client.target(baseUrl()+"generic").request(MediaType.APPLICATION_JSON).get(GenericLocomotive.class);
   }
 
-  public ControllerValue getControllerValue(Controller controller) {
-    return this.client.target(baseUrl()+"controller/"+controller.getValue()).request(MediaType.APPLICATION_JSON).get(ControllerValue.class);
+  public ControlValue getControlValue(Control control) {
+    return this.client.target(baseUrl()+"control/"+control.getValue()).request(MediaType.APPLICATION_JSON).get(ControlValue.class);
   }
   
   private String baseUrl() {
