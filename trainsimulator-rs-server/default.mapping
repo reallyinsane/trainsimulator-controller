@@ -17,7 +17,10 @@
 # API controls. So the mapping defines a control with a certain value to map to
 # an API control:
 # <engine control name>=<engine control value>=<API control name>
-
+# 
+# The mapping can be defined either in the default.mapping file or a separate file
+# for a certain engine. The filename must be <engine name>.mapping then.
+################################################################################
 # Renaming
 PZB_B40=PZB_40
 PZB_500Hz=PZB_500
