@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 package de.mathan.trainsimulator.server;
-
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,68 +45,74 @@ import de.mathan.trainsimulator.server.internal.NativeLibrary;
 import de.mathan.trainsimulator.server.internal.VirtualControl;
 
 /**
- * REST-Service delegating the requests to Railworks.dll using JNA. 
+ * REST-Service delegating the requests to Railworks.dll using JNA.
+ *
  * @author Matthias Hanisch
  */
 @Path("/trainsimulator")
-public class TrainSimulatorRS implements TrainSimulatorService{
-  @Inject
-  private NativeLibrary nativeLibrary;
-  
+public class TrainSimulatorRS implements TrainSimulatorService {
+  @Inject private NativeLibrary nativeLibrary;
+
   private static Map<String, Integer> nameMap = new HashMap<>();
   private static Map<Control, Integer> controlsMap = new HashMap<>();
-  private static Map<Control, VirtualControl> virtualControlsMap= new HashMap<>();
-  
+  private static Map<Control, VirtualControl> virtualControlsMap = new HashMap<>();
+
+  @Override
   @GET
   @Path("/locomotive")
   @Produces(MediaType.APPLICATION_JSON)
   public Locomotive getLocomotive() {
     Locomotive locomotive = new Locomotive();
-    StringTokenizer tokenizer = new StringTokenizer(nativeLibrary.GetLocoName(), ".:.");
-    if(tokenizer.hasMoreTokens()) {
+    StringTokenizer tokenizer = new StringTokenizer(this.nativeLibrary.GetLocoName(), ".:.");
+    if (tokenizer.hasMoreTokens()) {
       locomotive.setProvider(tokenizer.nextToken());
       locomotive.setProduct(tokenizer.nextToken());
       locomotive.setEngine(tokenizer.nextToken());
-      locomotive.setCombinedThrottleBrake(nativeLibrary.GetRailSimCombinedThrottleBrake());
-      locomotive.getControls().addAll(getControls(getMapping("default"), getMapping(locomotive.getEngine())));
-      locomotive.getControls().addAll(getVirtualControls(getMapping("default"), getMapping(locomotive.getEngine())));
+      locomotive.setCombinedThrottleBrake(this.nativeLibrary.GetRailSimCombinedThrottleBrake());
+      locomotive
+          .getControls()
+          .addAll(getControls(getMapping("default"), getMapping(locomotive.getEngine())));
+      locomotive
+          .getControls()
+          .addAll(getVirtualControls(getMapping("default"), getMapping(locomotive.getEngine())));
     }
     return locomotive;
   }
-  
+
+  @Override
   @GET
   @Path("/generic")
   @Produces(MediaType.APPLICATION_JSON)
   public GenericLocomotive getGenericLocomotive() {
     GenericLocomotive locomotive = new GenericLocomotive();
-    StringTokenizer tokenizer = new StringTokenizer(nativeLibrary.GetLocoName(), ".:.");
-    if(tokenizer.hasMoreTokens()) {
+    StringTokenizer tokenizer = new StringTokenizer(this.nativeLibrary.GetLocoName(), ".:.");
+    if (tokenizer.hasMoreTokens()) {
       locomotive.setProvider(tokenizer.nextToken());
       locomotive.setProduct(tokenizer.nextToken());
       locomotive.setEngine(tokenizer.nextToken());
-      locomotive.setCombinedThrottleBrake(nativeLibrary.GetRailSimCombinedThrottleBrake());
+      locomotive.setCombinedThrottleBrake(this.nativeLibrary.GetRailSimCombinedThrottleBrake());
       locomotive.getControls().addAll(getGenericControls());
     }
     return locomotive;
   }
-  
+
   private List<GenericControl> getGenericControls() {
     List<GenericControl> list = new ArrayList<>();
-    String result=nativeLibrary.GetControllerList();
-    if(result!=null) {
+    String result = this.nativeLibrary.GetControllerList();
+    if (result != null) {
       StringTokenizer tokenizer = new StringTokenizer(result, "::");
       int index = 0;
       while (tokenizer.hasMoreTokens()) {
         String controlName = tokenizer.nextToken();
         GenericControl control = new GenericControl();
-        control.setCurrent(nativeLibrary.GetControllerValue(index, 0));
+        control.setCurrent(this.nativeLibrary.GetControllerValue(index, 0));
         control.setId(index);
         control.setName(controlName);
-        control.setMaximum(nativeLibrary.GetControllerValue(index, 2));
-        control.setMinimum(nativeLibrary.GetControllerValue(index, 1));
+        control.setMaximum(this.nativeLibrary.GetControllerValue(index, 2));
+        control.setMinimum(this.nativeLibrary.GetControllerValue(index, 1));
         list.add(control);
         index++;
-      }   
+      }
     }
     return list;
   }
@@ -116,17 +121,18 @@ public class TrainSimulatorRS implements TrainSimulatorService{
     List<Control> list = new ArrayList<>();
     synchronized (virtualControlsMap) {
       virtualControlsMap.clear();
-      String result=nativeLibrary.GetControllerList();
-      if(result!=null) {
+      String result = this.nativeLibrary.GetControllerList();
+      if (result != null) {
         StringTokenizer tokenizer = new StringTokenizer(result, "::");
         int index = 0;
         while (tokenizer.hasMoreTokens()) {
           String controlName = tokenizer.nextToken();
-          List<VirtualMapping> virtualControls = defaultMapping.getVirtualMapping().get(controlName);
-          if(virtualControls!=null) {
-            for(VirtualMapping virtualControl:virtualControls) {
+          List<VirtualMapping> virtualControls =
+              defaultMapping.getVirtualMapping().get(controlName);
+          if (virtualControls != null) {
+            for (VirtualMapping virtualControl : virtualControls) {
               Control control = Control.fromString(virtualControl.getName());
-              if(control!=null) {
+              if (control != null) {
                 list.add(control);
                 VirtualControl vc = new VirtualControl(index, virtualControl.getValue());
                 virtualControlsMap.put(control, vc);
@@ -134,33 +140,34 @@ public class TrainSimulatorRS implements TrainSimulatorService{
             }
           }
           index++;
-        }   
+        }
       }
     }
     return list;
   }
-  
+
+  @Override
   @GET
   @Path("/control/{control}")
   @Produces(MediaType.APPLICATION_JSON)
   public ControlValue getControlValue(@PathParam("control") Control control) {
     synchronized (controlsMap) {
       Integer id = controlsMap.get(control);
-      if(id!=null) {
+      if (id != null) {
         ControlValue value = new ControlValue();
-        value.setCurrent(nativeLibrary.GetControllerValue(id, 0));
-        value.setMinimum(nativeLibrary.GetControllerValue(id, 1));
-        value.setMaximum(nativeLibrary.GetControllerValue(id, 2));
+        value.setCurrent(this.nativeLibrary.GetControllerValue(id, 0));
+        value.setMinimum(this.nativeLibrary.GetControllerValue(id, 1));
+        value.setMaximum(this.nativeLibrary.GetControllerValue(id, 2));
         return value;
       } else {
         synchronized (virtualControlsMap) {
           VirtualControl virtualControl = virtualControlsMap.get(control);
-          if(virtualControl!=null) {
+          if (virtualControl != null) {
             ControlValue value = new ControlValue();
             value.setMinimum(0f);
             value.setMaximum(1f);
-            Float current = nativeLibrary.GetControllerValue(virtualControl.getId(), 0);
-            if(virtualControl.getValue().equals(current)) {
+            Float current = this.nativeLibrary.GetControllerValue(virtualControl.getId(), 0);
+            if (virtualControl.getValue().equals(current)) {
               value.setCurrent(1f);
             } else {
               value.setCurrent(0f);
@@ -172,34 +179,35 @@ public class TrainSimulatorRS implements TrainSimulatorService{
       return null;
     }
   }
-  
-	private Mapping getMapping(String loco) {
-	  Mapping mapping = new Mapping();
-    File file = new File(loco+".mapping");
-    if(file.exists()) {
+
+  private Mapping getMapping(String loco) {
+    Mapping mapping = new Mapping();
+    File file = new File(loco + ".mapping");
+    if (file.exists()) {
       try {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-        String line=null;
-        while((line=reader.readLine())!=null) {
-          if(line.startsWith("#")) {
+        BufferedReader reader =
+            new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+          if (line.startsWith("#")) {
             continue;
           }
-          int index1 =line.indexOf('=');
-          if(index1!=-1) {
-            int index2 = line.indexOf('=', index1+1);
-            if(index2==-1) {
+          int index1 = line.indexOf('=');
+          if (index1 != -1) {
+            int index2 = line.indexOf('=', index1 + 1);
+            if (index2 == -1) {
               // simple mapping
-              String key = line.substring(0,index1);
-              String value = line.substring(index1+1);
+              String key = line.substring(0, index1);
+              String value = line.substring(index1 + 1);
               mapping.getSimpleMapping().put(key, value);
             } else {
-              String virtualControlName =line.substring(0,index1);
-              Float value = Float.valueOf(line.substring(index1+1, index2));
-              String controlName = line.substring(index2+1);
+              String virtualControlName = line.substring(0, index1);
+              Float value = Float.valueOf(line.substring(index1 + 1, index2));
+              String controlName = line.substring(index2 + 1);
               VirtualMapping virtualControl = new VirtualMapping(controlName, value);
-              
+
               List<VirtualMapping> list = mapping.getVirtualMapping().get(virtualControlName);
-              if(list==null) {
+              if (list == null) {
                 list = new ArrayList<>();
                 mapping.getVirtualMapping().put(virtualControlName, list);
               }
@@ -215,53 +223,52 @@ public class TrainSimulatorRS implements TrainSimulatorService{
       }
     }
     return mapping;
-	}
-	
-	private List<Control> getControls(Mapping defaultMapping, Mapping locoMapping) {
-	  synchronized (controlsMap) {
-	    controlsMap.clear();
-	    nameMap.clear();
-	    List<Control> list = new ArrayList<>();
-      String result=nativeLibrary.GetControllerList();
-      if(result!=null) {
+  }
+
+  private List<Control> getControls(Mapping defaultMapping, Mapping locoMapping) {
+    synchronized (controlsMap) {
+      controlsMap.clear();
+      nameMap.clear();
+      List<Control> list = new ArrayList<>();
+      String result = this.nativeLibrary.GetControllerList();
+      if (result != null) {
         StringTokenizer tokenizer = new StringTokenizer(result, "::");
         int index = 0;
         while (tokenizer.hasMoreTokens()) {
           String controlName = tokenizer.nextToken();
           nameMap.put(controlName, index);
-          Control control = getControlForName(controlName, defaultMapping, locoMapping); 
-          if(control!=null) {
+          Control control = getControlForName(controlName, defaultMapping, locoMapping);
+          if (control != null) {
             list.add(control);
             controlsMap.put(control, index);
           }
           index++;
-        }   
+        }
       }
       return list;
     }
-	}
-    
-  private Control getControlForName(String controlName, Mapping defaultMapping,
-      Mapping locoMapping) {
+  }
+
+  private Control getControlForName(
+      String controlName, Mapping defaultMapping, Mapping locoMapping) {
     Control control = Control.fromString(controlName);
-    if(control!=null) {
+    if (control != null) {
       return control;
     }
     String locoControlName = locoMapping.getSimpleMapping().get(controlName);
-    if(locoControlName!=null) {
-      control= Control.fromString(locoControlName);
-      if(control!=null) {
+    if (locoControlName != null) {
+      control = Control.fromString(locoControlName);
+      if (control != null) {
         return control;
       }
     }
     String defaultControlName = defaultMapping.getSimpleMapping().get(controlName);
-    if(defaultControlName!=null) {
-      control= Control.fromString(defaultControlName);
-      if(control!=null) {
+    if (defaultControlName != null) {
+      control = Control.fromString(defaultControlName);
+      if (control != null) {
         return control;
       }
     }
     return null;
   }
-
 }

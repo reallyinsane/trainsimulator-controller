@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,34 +28,46 @@ import de.mathan.trainsimulator.model.ControlValue;
 import de.mathan.trainsimulator.model.Locomotive;
 import de.mathan.trainsimulator.model.generic.GenericLocomotive;
 
-
 public class TrainSimulatorRSClient implements TrainSimulatorService {
 
   private final Client client;
-  private Configuration configuration;
+  private final Configuration configuration;
 
   public TrainSimulatorRSClient(Configuration configuration) {
     this.configuration = configuration;
-    client =ClientBuilder.newClient();
-    client.register(JacksonJaxbJsonProvider.class);
-  }
-  
-  public Locomotive getLocomotive() {
-    return this.client.target(baseUrl()+"locomotive").request(MediaType.APPLICATION_JSON).get(Locomotive.class);
-  }
-  
-  @Override
-  public GenericLocomotive getGenericLocomotive()
-      throws TrainSimulatorException {
-    return this.client.target(baseUrl()+"generic").request(MediaType.APPLICATION_JSON).get(GenericLocomotive.class);
+    this.client = ClientBuilder.newClient();
+    this.client.register(JacksonJaxbJsonProvider.class);
   }
 
-  public ControlValue getControlValue(Control control) {
-    return this.client.target(baseUrl()+"control/"+control.getValue()).request(MediaType.APPLICATION_JSON).get(ControlValue.class);
+  @Override
+  public Locomotive getLocomotive() {
+    return this.client
+        .target(baseUrl() + "locomotive")
+        .request(MediaType.APPLICATION_JSON)
+        .get(Locomotive.class);
   }
-  
+
+  @Override
+  public GenericLocomotive getGenericLocomotive() throws TrainSimulatorException {
+    return this.client
+        .target(baseUrl() + "generic")
+        .request(MediaType.APPLICATION_JSON)
+        .get(GenericLocomotive.class);
+  }
+
+  @Override
+  public ControlValue getControlValue(Control control) {
+    return this.client
+        .target(baseUrl() + "control/" + control.getValue())
+        .request(MediaType.APPLICATION_JSON)
+        .get(ControlValue.class);
+  }
+
   private String baseUrl() {
-    return String.format("http://%s:%s/trainsimulator/",
-        new Object[] { configuration.getRestHost(), Integer.valueOf(configuration.getRestPort()) });
+    return String.format(
+        "http://%s:%s/trainsimulator/",
+        new Object[] {
+          this.configuration.getRestHost(), Integer.valueOf(this.configuration.getRestPort())
+        });
   }
 }

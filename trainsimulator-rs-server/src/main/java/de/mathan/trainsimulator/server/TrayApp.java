@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,6 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -34,66 +32,33 @@ import de.mathan.trainsimulator.server.internal.UdpMulticastServer;
 public class TrayApp {
 
   private static String TOOLTIP = "TrainSimulator Controller Server (%s)";
-  private static String NOT_RUNNING ="not running";
-  private static String RUNNING ="running";
+  private static String NOT_RUNNING = "not running";
+  private static String RUNNING = "running";
 
-  private TrayIcon icon;
+  private final TrayIcon icon;
 
-  private BufferedImage icoDefault = ImageIO.read(getClass().getResource("/railway-station-blue.png"));
-  private BufferedImage icoActive = ImageIO.read(getClass().getResource("/railway-station-green.png"));
+  private final BufferedImage icoDefault =
+      ImageIO.read(getClass().getResource("/railway-station-blue.png"));
+  private final BufferedImage icoActive =
+      ImageIO.read(getClass().getResource("/railway-station-green.png"));
 
-  private MenuItem itemStart = new MenuItem("Start");
-  private MenuItem itemStop = new MenuItem("Stop");
-  private MenuItem itemLocation = new MenuItem("Dll Location");
-  private MenuItem itemExit = new MenuItem("Exit");
+  private final MenuItem itemStart = new MenuItem("Start");
+  private final MenuItem itemStop = new MenuItem("Stop");
+  private final MenuItem itemLocation = new MenuItem("Dll Location");
+  private final MenuItem itemExit = new MenuItem("Exit");
 
-  private ActionListener actionStart = new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-      start();
-    }
-  };
-  private ActionListener actionStop = new ActionListener() {
-
-    public void actionPerformed(ActionEvent e) {
-      try {
-        setState(icoDefault, NOT_RUNNING);
-        TrainSimulatorServer.stop();
-      } catch (Exception e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
-      }
-    }
-  };
-  private ActionListener actionLocation = new ActionListener() {
-
-    public void actionPerformed(ActionEvent e) {
-      changeLocation();
-    }
-  };
-  private ActionListener actionExit = new ActionListener() {
-
-    public void actionPerformed(ActionEvent e) {
-      SystemTray.getSystemTray().remove(icon);
-      try {
-        TrainSimulatorServer.stop();
-      } catch (Exception e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
-      }
-      System.exit(0);
-    }
-  };
-
-  private int trayIconWidth;
-  private Configuration configuration;
+  private final int trayIconWidth;
+  private final Configuration configuration;
 
   protected void setState(BufferedImage ico, String message) {
-    icon.setImage(ico.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH));
-    icon.setToolTip(tooltip(message));
+    this.icon.setImage(ico.getScaledInstance(this.trayIconWidth, -1, Image.SCALE_SMOOTH));
+    this.icon.setToolTip(tooltip(message));
   }
 
   protected void changeLocation() {
-    String location = JOptionPane.showInputDialog("Specify path to Railworks.dll", NativeLibraryFactory.getDllLocation());
+    String location =
+        JOptionPane.showInputDialog(
+            "Specify path to Railworks.dll", NativeLibraryFactory.getDllLocation());
     NativeLibraryFactory.setDllLocation(location);
   }
 
@@ -101,12 +66,11 @@ public class TrayApp {
     return String.format(TOOLTIP, message);
   }
 
-
   private void start() {
     try {
       String location = NativeLibraryFactory.getDllLocation();
-      if(!location.isEmpty()&&TrainSimulatorServer.start(configuration)) {
-        setState(icoActive, RUNNING);
+      if (!location.isEmpty() && TrainSimulatorServer.start(this.configuration)) {
+        setState(this.icoActive, RUNNING);
       }
     } catch (Exception e1) {
       // TODO Auto-generated catch block
@@ -116,21 +80,44 @@ public class TrayApp {
 
   public TrayApp(Configuration configuration) throws IOException, AWTException {
     this.configuration = configuration;
-    trayIconWidth = new TrayIcon(icoDefault).getSize().width;
-    icon= new TrayIcon(icoDefault.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH), tooltip(NOT_RUNNING));
+    this.trayIconWidth = new TrayIcon(this.icoDefault).getSize().width;
+    this.icon =
+        new TrayIcon(
+            this.icoDefault.getScaledInstance(this.trayIconWidth, -1, Image.SCALE_SMOOTH),
+            tooltip(NOT_RUNNING));
     PopupMenu menu = new PopupMenu();
-    menu.add(itemStart);
-    menu.add(itemStop);
-    menu.add(itemLocation);
-    menu.add(itemExit);
-    itemStart.addActionListener(actionStart);
-    itemStop.addActionListener(actionStop);
-    itemLocation.addActionListener(actionLocation);
-    itemExit.addActionListener(actionExit);
-    icon.setPopupMenu(menu);
-    SystemTray.getSystemTray().add(icon);
+    menu.add(this.itemStart);
+    menu.add(this.itemStop);
+    menu.add(this.itemLocation);
+    menu.add(this.itemExit);
+    this.itemStart.addActionListener((e) -> start());
+    this.itemStop.addActionListener((e) -> stop());
+    this.itemLocation.addActionListener((e) -> changeLocation());
+    this.itemExit.addActionListener((e) -> exit());
+    this.icon.setPopupMenu(menu);
+    SystemTray.getSystemTray().add(this.icon);
     start();
     new UdpMulticastServer(configuration).start();
+  }
+
+  private void exit() {
+    SystemTray.getSystemTray().remove(TrayApp.this.icon);
+    try {
+      TrainSimulatorServer.stop();
+    } catch (Exception e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    System.exit(0);
+  }
+
+  private void stop() {
+    try {
+      setState(TrayApp.this.icoDefault, NOT_RUNNING);
+      TrainSimulatorServer.stop();
+    } catch (Exception e1) {
+      e1.printStackTrace();
+    }
   }
 
   public static void main(String[] args) throws IOException, AWTException {
