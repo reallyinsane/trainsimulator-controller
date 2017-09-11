@@ -1,81 +1,73 @@
+/*
+ * Copyright 2017 Matthias Hanisch (reallyinsane)
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package de.mathan.trainsimulator.client.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
-import de.mathan.trainsimulator.client.TrainSimulator;
+import de.mathan.trainsimulator.TrainSimulatorException;
+import de.mathan.trainsimulator.TrainSimulatorService;
+import de.mathan.trainsimulator.client.Configuration;
+import de.mathan.trainsimulator.model.Control;
+import de.mathan.trainsimulator.model.ControlValue;
+import de.mathan.trainsimulator.model.Locomotive;
+import de.mathan.trainsimulator.model.generic.GenericLocomotive;
 
-public class TrainSimulatorRSClient {
+public class TrainSimulatorRSClient implements TrainSimulatorService {
 
-  private final String host;
-  private final int port;
   private final Client client;
+  private final Configuration configuration;
 
-  public TrainSimulatorRSClient(String host, int port)
-  {
-    this.host = host;
-    this.port = port;
-    this.client = Client.create();
+  public TrainSimulatorRSClient(Configuration configuration) {
+    this.configuration = configuration;
+    this.client = ClientBuilder.newClient();
+    this.client.register(JacksonJaxbJsonProvider.class);
   }
 
-  public String getLocoName() {
-    WebResource resource = this.client.resource(baseUrl() + "loconame");
-    return (String) resource.get(String.class);
+  @Override
+  public Locomotive getLocomotive() {
+    return this.client
+        .target(baseUrl() + "locomotive")
+        .request(MediaType.APPLICATION_JSON)
+        .get(Locomotive.class);
   }
 
-  public boolean isCombinedThrottleBrake() {
-    WebResource resource = this.client
-        .resource(baseUrl() + "combinedThrottleBrake");
-    return Boolean.valueOf((String) resource.get(String.class)).booleanValue();
+  @Override
+  public GenericLocomotive getGenericLocomotive() throws TrainSimulatorException {
+    return this.client
+        .target(baseUrl() + "generic")
+        .request(MediaType.APPLICATION_JSON)
+        .get(GenericLocomotive.class);
   }
 
-  public Map<String, Integer> getControllerList() {
-    WebResource resource = this.client.resource(baseUrl() + "list");
-    String result = (String) resource.get(String.class);
-    StringTokenizer tokenizer = new StringTokenizer(result, "::");
-    int index = 0;
-    Map<String, Integer> map = new HashMap<String,Integer>();
-    while (tokenizer.hasMoreTokens()) {
-      String token = tokenizer.nextToken();
-      map.put(token, Integer.valueOf(index++));
-    }
-    return map;
-  }
-
-  public Map<String, String> getMapping(String loco) {
-    WebResource resource = this.client.resource(baseUrl() + "mapping");
-    String result = (String) resource.queryParam("loco", loco)
-        .get(String.class);
-    StringTokenizer tokenizer = new StringTokenizer(result, ";");
-    Map<String, String> map = new HashMap<String, String>();
-    while (tokenizer.hasMoreTokens()) {
-      String token = tokenizer.nextToken();
-      int index = token.indexOf('=');
-      map.put(token.substring(0, index), token.substring(index + 1));
-    }
-    return map;
-  }
-
-  public float getControllerValue(int id, int type) {
-    WebResource resource = this.client.resource(baseUrl() + "controller/" + id);
-    return Float.valueOf((String) resource
-        .queryParam("type", String.valueOf(type)).get(String.class))
-        .floatValue();
-  }
-
-  public void setControllerValue(int id, float value) {
-    WebResource resource = this.client.resource(baseUrl() + "controller/" + id);
-    resource.queryParam("value", String.valueOf(value))
-        .put(ClientResponse.class);
+  @Override
+  public ControlValue getControlValue(Control control) {
+    return this.client
+        .target(baseUrl() + "control/" + control.getValue())
+        .request(MediaType.APPLICATION_JSON)
+        .get(ControlValue.class);
   }
 
   private String baseUrl() {
-    return String.format("http://%s:%s/trainsimulator/",
-        new Object[] { this.host, Integer.valueOf(this.port) });
+    return String.format(
+        "http://%s:%s/trainsimulator/",
+        new Object[] {
+          this.configuration.getRestHost(), Integer.valueOf(this.configuration.getRestPort())
+        });
   }
 }
