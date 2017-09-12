@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>de.mathan.trainsimulator</groupId>
+    <groupId>io.mathan.trainsimulator</groupId>
     <artifactId>trainsimulator-controller</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
@@ -27,7 +27,7 @@
       <version>1.4</version>
     </dependency>
     <dependency>
-      <groupId>de.mathan.trainsimulator</groupId>
+      <groupId>io.mathan.trainsimulator</groupId>
       <artifactId>trainsimulator-model</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
@@ -68,7 +68,7 @@
               <transformers>
                 <transformer
                   implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>de.mathan.trainsimulator.client.internal.TrainSimulatorClient</mainClass>
+                  <mainClass>io.mathan.trainsimulator.client.internal.TrainSimulatorClient</mainClass>
                 </transformer>
               </transformers>
             </configuration>
