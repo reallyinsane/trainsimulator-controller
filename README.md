@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/reallyinsane/mathan-latex-maven-plugin.svg?branch=master)](https://travis-ci.org/reallyinsane/trainsimulator-controller)
+<a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-apache2-blue.svg"></a>
+
 # trainsimulator-controller
 Client and server components for exchange of controller information and commands between train simulator and devices.
 
