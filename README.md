@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/reallyinsane/trainsimulator-controller.svg?branch=master)](https://travis-ci.org/reallyinsane/trainsimulator-controller)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6b11f46bd5f34e3ba4c91e96b7ccf99c)](https://www.codacy.com/app/reallyinsane/trainsimulator-controller?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=reallyinsane/trainsimulator-controller&amp;utm_campaign=Badge_Grade)
 <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-apache2-blue.svg"></a>
 
 # trainsimulator-controller
