@@ -12,10 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.mathan.trainsimulator.server;
 
 /**
- * Configuration for the {@link TrainSimulatorServer}
+ * Configuration for the {@link TrainSimulatorServer}.
  *
  * @author Matthias Hanisch (reallyinsane)
  */

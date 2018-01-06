@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.mathan.trainsimulator.client;
 
 import io.mathan.trainsimulator.TrainSimulatorException;
@@ -76,12 +77,6 @@ public class DefaultTrainSimulatorClient implements TrainSimulatorClient {
   }
 
   @Override
-  public ControlValue getControlValue(Control control)
-      throws TrainSimulatorException, UnsupportedControlException {
-    return this.client.getControlValue(control);
-  }
-
-  @Override
   public Float get(Control control, Type type)
       throws UnsupportedControlException, TrainSimulatorException {
     if (!has(control)) {
@@ -102,6 +97,13 @@ public class DefaultTrainSimulatorClient implements TrainSimulatorClient {
         throw new IllegalArgumentException();
     }
   }
+
+  @Override
+  public ControlValue getControlValue(Control control)
+      throws TrainSimulatorException, UnsupportedControlException {
+    return this.client.getControlValue(control);
+  }
+
 
   @Override
   public void press(Control control) throws UnsupportedControlException, TrainSimulatorException {

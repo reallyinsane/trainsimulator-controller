@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.mathan.trainsimulator.server;
 
 import io.mathan.trainsimulator.server.internal.NativeLibrary;
@@ -29,7 +30,7 @@ public class TrainSimulatorServer {
   private static Server server;
 
   /**
-   * Starts the REST-Service on port 13913
+   * Starts the REST-Service on port 13913.
    *
    * @param configuration The configuration for the server.
    */
@@ -44,7 +45,7 @@ public class TrainSimulatorServer {
   }
 
   /**
-   * Stops the REST-Service
+   * Stops the REST-Service.
    */
   public static void stop() throws Exception {
     if (server != null) {
