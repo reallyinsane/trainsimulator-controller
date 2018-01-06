@@ -28,7 +28,6 @@ import io.mathan.trainsimulator.server.internal.VirtualControl;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -51,12 +50,14 @@ import javax.ws.rs.core.MediaType;
 @Path("/trainsimulator")
 public class TrainSimulatorRS implements TrainSimulatorService {
 
+  private static final String DELIMITER_LOCO = ".:.";
+  private static final String DELIMITER_CONTROLLER = "::";
+
   @Inject
   private NativeLibrary nativeLibrary;
 
-  private static Map<String, Integer> nameMap = new HashMap<>();
-  private static Map<Control, Integer> controlsMap = new HashMap<>();
-  private static Map<Control, VirtualControl> virtualControlsMap = new HashMap<>();
+  private static final Map<Control, Integer> controlsMap = new HashMap<>();
+  private static final Map<Control, VirtualControl> virtualControlsMap = new HashMap<>();
 
   @Override
   @GET
@@ -64,7 +65,7 @@ public class TrainSimulatorRS implements TrainSimulatorService {
   @Produces(MediaType.APPLICATION_JSON)
   public Locomotive getLocomotive() {
     Locomotive locomotive = new Locomotive();
-    StringTokenizer tokenizer = new StringTokenizer(this.nativeLibrary.GetLocoName(), ".:.");
+    StringTokenizer tokenizer = new StringTokenizer(this.nativeLibrary.GetLocoName(), DELIMITER_LOCO);
     if (tokenizer.hasMoreTokens()) {
       locomotive.setProvider(tokenizer.nextToken());
       locomotive.setProduct(tokenizer.nextToken());
@@ -86,7 +87,7 @@ public class TrainSimulatorRS implements TrainSimulatorService {
   @Produces(MediaType.APPLICATION_JSON)
   public GenericLocomotive getGenericLocomotive() {
     GenericLocomotive locomotive = new GenericLocomotive();
-    StringTokenizer tokenizer = new StringTokenizer(this.nativeLibrary.GetLocoName(), ".:.");
+    StringTokenizer tokenizer = new StringTokenizer(this.nativeLibrary.GetLocoName(), DELIMITER_LOCO);
     if (tokenizer.hasMoreTokens()) {
       locomotive.setProvider(tokenizer.nextToken());
       locomotive.setProduct(tokenizer.nextToken());
@@ -101,7 +102,7 @@ public class TrainSimulatorRS implements TrainSimulatorService {
     List<GenericControl> list = new ArrayList<>();
     String result = this.nativeLibrary.GetControllerList();
     if (result != null) {
-      StringTokenizer tokenizer = new StringTokenizer(result, "::");
+      StringTokenizer tokenizer = new StringTokenizer(result, DELIMITER_CONTROLLER);
       int index = 0;
       while (tokenizer.hasMoreTokens()) {
         String controlName = tokenizer.nextToken();
@@ -124,7 +125,7 @@ public class TrainSimulatorRS implements TrainSimulatorService {
       virtualControlsMap.clear();
       String result = this.nativeLibrary.GetControllerList();
       if (result != null) {
-        StringTokenizer tokenizer = new StringTokenizer(result, "::");
+        StringTokenizer tokenizer = new StringTokenizer(result, DELIMITER_CONTROLLER);
         int index = 0;
         while (tokenizer.hasMoreTokens()) {
           String controlName = tokenizer.nextToken();
@@ -207,18 +208,12 @@ public class TrainSimulatorRS implements TrainSimulatorService {
               String controlName = line.substring(index2 + 1);
               VirtualMapping virtualControl = new VirtualMapping(controlName, value);
 
-              List<VirtualMapping> list = mapping.getVirtualMapping().get(virtualControlName);
-              if (list == null) {
-                list = new ArrayList<>();
-                mapping.getVirtualMapping().put(virtualControlName, list);
-              }
+              List<VirtualMapping> list = mapping.getVirtualMapping().computeIfAbsent(virtualControlName, k -> new ArrayList<>());
               list.add(virtualControl);
             }
           }
         }
         reader.close();
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -229,15 +224,13 @@ public class TrainSimulatorRS implements TrainSimulatorService {
   private List<Control> getControls(Mapping defaultMapping, Mapping locoMapping) {
     synchronized (controlsMap) {
       controlsMap.clear();
-      nameMap.clear();
       List<Control> list = new ArrayList<>();
       String result = this.nativeLibrary.GetControllerList();
       if (result != null) {
-        StringTokenizer tokenizer = new StringTokenizer(result, "::");
+        StringTokenizer tokenizer = new StringTokenizer(result, DELIMITER_CONTROLLER);
         int index = 0;
         while (tokenizer.hasMoreTokens()) {
           String controlName = tokenizer.nextToken();
-          nameMap.put(controlName, index);
           Control control = getControlForName(controlName, defaultMapping, locoMapping);
           if (control != null) {
             list.add(control);

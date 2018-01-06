@@ -28,9 +28,6 @@ public class Locomotive {
   private final List<Control> controls = new ArrayList<>();
   private boolean combinedThrottleBrake;
 
-  public Locomotive() {
-  }
-
   public List<Control> getControls() {
     return this.controls;
   }

@@ -24,9 +24,6 @@ public class Mapping {
   private final Map<String, String> simpleMapping = new HashMap<>();
   private final Map<String, List<VirtualMapping>> virtualMapping = new HashMap<>();
 
-  public Mapping() {
-  }
-
   public Map<String, String> getSimpleMapping() {
     return this.simpleMapping;
   }

@@ -37,7 +37,7 @@ public enum Control {
 
   private final String value;
 
-  private Control(String value) {
+  Control(String value) {
     this.value = value;
   }
 

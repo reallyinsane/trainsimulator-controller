@@ -26,9 +26,6 @@ public class GenericControl {
   private Float minimum;
   private Float maximum;
 
-  public GenericControl() {
-  }
-
   public Float getCurrent() {
     return this.current;
   }

@@ -28,9 +28,6 @@ public class GenericLocomotive {
   private boolean combinedThrottleBrake;
   private final List<GenericControl> controls = new ArrayList<>();
 
-  public GenericLocomotive() {
-  }
-
   public List<GenericControl> getControls() {
     return this.controls;
   }
