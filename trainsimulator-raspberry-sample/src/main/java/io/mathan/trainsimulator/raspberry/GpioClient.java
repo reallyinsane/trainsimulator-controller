@@ -14,25 +14,24 @@
  */
 package io.mathan.trainsimulator.raspberry;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
-
 import io.mathan.trainsimulator.TrainSimulatorException;
 import io.mathan.trainsimulator.UnsupportedControlException;
 import io.mathan.trainsimulator.client.TrainSimulatorClient;
 import io.mathan.trainsimulator.client.TrainSimulatorClientFactory;
 import io.mathan.trainsimulator.model.Control;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GpioClient {
+
   private static Map<Control, Pin> namePinMapping = new HashMap<Control, Pin>();
   private static String loco;
   private static GpioController gpio = null;
@@ -110,7 +109,7 @@ public class GpioClient {
     idOutputMap.clear();
     if (gpio != null) {
       for (GpioPin pin : new ArrayList<GpioPin>(gpio.getProvisionedPins())) {
-        gpio.unprovisionPin(new GpioPin[] {pin});
+        gpio.unprovisionPin(new GpioPin[]{pin});
       }
       gpio.shutdown();
     }
@@ -121,11 +120,11 @@ public class GpioClient {
         GpioPinDigitalOutput out = gpio.provisionDigitalOutputPin(pin);
         idOutputMap.put(control, out);
         System.out.println(
-            String.format("initialized control %s on %s", new Object[] {control, pin}));
+            String.format("initialized control %s on %s", new Object[]{control, pin}));
       } else {
         System.out.println(
             String.format(
-                "control %s not initialized on %s (no ID for loco)", new Object[] {control, pin}));
+                "control %s not initialized on %s (no ID for loco)", new Object[]{control, pin}));
       }
     }
   }

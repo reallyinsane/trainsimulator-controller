@@ -14,9 +14,6 @@
  */
 package io.mathan.trainsimulator.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.mathan.trainsimulator.TrainSimulatorException;
 import io.mathan.trainsimulator.TrainSimulatorService;
 import io.mathan.trainsimulator.UnsupportedControlException;
@@ -24,8 +21,11 @@ import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlValue;
 import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultTrainSimulatorClient implements TrainSimulatorClient {
+
   private final TrainSimulatorService client;
   private String currentLocoName = null;
   private List<Control> availableControls = new ArrayList<>();

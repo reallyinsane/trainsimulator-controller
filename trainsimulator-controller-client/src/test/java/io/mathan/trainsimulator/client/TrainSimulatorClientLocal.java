@@ -14,13 +14,11 @@
  */
 package io.mathan.trainsimulator.client;
 
-import java.util.List;
-
-import io.mathan.trainsimulator.client.Configuration;
 import io.mathan.trainsimulator.client.internal.TrainSimulatorRSClient;
 import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlValue;
 import io.mathan.trainsimulator.model.Locomotive;
+import java.util.List;
 
 public class TrainSimulatorClientLocal {
 

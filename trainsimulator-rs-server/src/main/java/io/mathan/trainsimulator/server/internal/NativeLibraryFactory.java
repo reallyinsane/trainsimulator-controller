@@ -14,14 +14,12 @@
  */
 package io.mathan.trainsimulator.server.internal;
 
-import java.io.File;
-import java.util.prefs.Preferences;
-
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
-
 import io.mathan.trainsimulator.server.TrainSimulatorServer;
+import java.io.File;
+import java.util.prefs.Preferences;
 
 public class NativeLibraryFactory {
 
@@ -35,7 +33,7 @@ public class NativeLibraryFactory {
             WinReg.HKEY_LOCAL_MACHINE,
             "SOFTWARE\\WOW6432Node\\railsimulator.com\\railworks",
             "install_path");
-    if (railworksPath != null && !railworksPath.trim().isEmpty()) {
+    if (!railworksPath.trim().isEmpty()) {
       railworksPath += "\\plugins\\RailDriver.dll";
       if (new File(railworksPath).exists()) {
         return railworksPath;

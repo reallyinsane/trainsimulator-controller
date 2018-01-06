@@ -14,15 +14,15 @@
  */
 package io.mathan.trainsimulator.server.internal;
 
+import io.mathan.trainsimulator.server.Configuration;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import io.mathan.trainsimulator.server.Configuration;
-
 public class UdpMulticastServer extends Thread {
+
   private DatagramSocket socket = null;
   private final InetAddress group;
   private final Configuration configuration;

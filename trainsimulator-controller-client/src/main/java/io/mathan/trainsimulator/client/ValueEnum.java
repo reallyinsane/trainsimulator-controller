@@ -14,6 +14,7 @@
  */
 package io.mathan.trainsimulator.client;
 
-public abstract interface ValueEnum<T> {
-  public abstract T getValue();
+public interface ValueEnum<T> {
+
+  T getValue();
 }

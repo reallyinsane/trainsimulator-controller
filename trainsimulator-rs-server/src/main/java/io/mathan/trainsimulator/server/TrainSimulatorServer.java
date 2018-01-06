@@ -14,6 +14,8 @@
  */
 package io.mathan.trainsimulator.server;
 
+import io.mathan.trainsimulator.server.internal.NativeLibrary;
+import io.mathan.trainsimulator.server.internal.NativeLibraryFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -22,18 +24,14 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-import io.mathan.trainsimulator.server.internal.NativeLibrary;
-import io.mathan.trainsimulator.server.internal.NativeLibraryFactory;
-
 public class TrainSimulatorServer {
+
   private static Server server;
 
   /**
    * Starts the REST-Service on port 13913
    *
-   * @param location The location of the Railworks.dll
-   * @return
-   * @throws Exception
+   * @param configuration The configuration for the server.
    */
   public static boolean start(Configuration configuration) throws Exception {
     NativeLibrary nativeLibrary = NativeLibraryFactory.getInstance();
@@ -47,8 +45,6 @@ public class TrainSimulatorServer {
 
   /**
    * Stops the REST-Service
-   *
-   * @throws Exception
    */
   public static void stop() throws Exception {
     if (server != null) {

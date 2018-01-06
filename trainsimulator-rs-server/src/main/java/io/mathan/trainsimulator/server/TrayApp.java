@@ -14,6 +14,8 @@
  */
 package io.mathan.trainsimulator.server;
 
+import io.mathan.trainsimulator.server.internal.NativeLibraryFactory;
+import io.mathan.trainsimulator.server.internal.UdpMulticastServer;
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.MenuItem;
@@ -22,12 +24,8 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
-
-import io.mathan.trainsimulator.server.internal.NativeLibraryFactory;
-import io.mathan.trainsimulator.server.internal.UdpMulticastServer;
 
 public class TrayApp {
 

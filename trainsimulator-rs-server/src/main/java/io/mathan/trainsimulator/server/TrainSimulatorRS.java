@@ -14,6 +14,16 @@
  */
 package io.mathan.trainsimulator.server;
 
+import io.mathan.trainsimulator.TrainSimulatorService;
+import io.mathan.trainsimulator.model.Control;
+import io.mathan.trainsimulator.model.ControlValue;
+import io.mathan.trainsimulator.model.Locomotive;
+import io.mathan.trainsimulator.model.generic.GenericControl;
+import io.mathan.trainsimulator.model.generic.GenericLocomotive;
+import io.mathan.trainsimulator.server.internal.Mapping;
+import io.mathan.trainsimulator.server.internal.Mapping.VirtualMapping;
+import io.mathan.trainsimulator.server.internal.NativeLibrary;
+import io.mathan.trainsimulator.server.internal.VirtualControl;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,24 +35,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import io.mathan.trainsimulator.TrainSimulatorService;
-import io.mathan.trainsimulator.model.Control;
-import io.mathan.trainsimulator.model.ControlValue;
-import io.mathan.trainsimulator.model.Locomotive;
-import io.mathan.trainsimulator.model.generic.GenericControl;
-import io.mathan.trainsimulator.model.generic.GenericLocomotive;
-import io.mathan.trainsimulator.server.internal.Mapping;
-import io.mathan.trainsimulator.server.internal.NativeLibrary;
-import io.mathan.trainsimulator.server.internal.VirtualControl;
-import io.mathan.trainsimulator.server.internal.Mapping.VirtualMapping;
 
 /**
  * REST-Service delegating the requests to Railworks.dll using JNA.
@@ -51,7 +49,9 @@ import io.mathan.trainsimulator.server.internal.Mapping.VirtualMapping;
  */
 @Path("/trainsimulator")
 public class TrainSimulatorRS implements TrainSimulatorService {
-  @Inject private NativeLibrary nativeLibrary;
+
+  @Inject
+  private NativeLibrary nativeLibrary;
 
   private static Map<String, Integer> nameMap = new HashMap<>();
   private static Map<Control, Integer> controlsMap = new HashMap<>();

@@ -20,7 +20,7 @@
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-json-jackson</artifactId>
       <version>2.25.1</version>
-  </dependency>    
+    </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
@@ -31,18 +31,18 @@
       <artifactId>trainsimulator-model</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-<dependency>
-    <groupId>org.mockito</groupId>
-    <artifactId>mockito-all</artifactId>
-    <version>1.10.19</version>
-    <scope>test</scope>
-</dependency>      
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.10.19</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

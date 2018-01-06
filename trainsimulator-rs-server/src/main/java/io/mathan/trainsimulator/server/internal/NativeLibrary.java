@@ -17,6 +17,7 @@ package io.mathan.trainsimulator.server.internal;
 import com.sun.jna.Library;
 
 public interface NativeLibrary extends Library {
+
   String GetControllerList();
 
   String GetLocoName();

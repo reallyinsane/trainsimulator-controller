@@ -20,13 +20,12 @@ import io.mathan.trainsimulator.UnsupportedControlException;
 import io.mathan.trainsimulator.model.Control;
 
 /**
- * The interface for clients interacting with controls from Train Simulator. As not all locos
- * support all kind of controls the enum {@link Control} is used to identify the control on each
- * request.
+ * The interface for clients interacting with controls from Train Simulator. As not all locos support all kind of controls the enum {@link Control} is used to identify the control on each request.
  *
  * @author Matthias Hanisch (reallyinsane)
  */
 public interface TrainSimulatorClient extends TrainSimulatorService {
+
   String getLocoName() throws TrainSimulatorException;
 
   /**
@@ -38,14 +37,12 @@ public interface TrainSimulatorClient extends TrainSimulatorService {
   boolean has(Control control);
 
   /**
-   * Returns whether the state of the given control is enabled or not. This should be called for
-   * &quot;boolean&quot; controls only. Also check if the control is supported in advance using
-   * {@link #has(Control )}.
+   * Returns whether the state of the given control is enabled or not. This should be called for &quot;boolean&quot; controls only. Also check if the control is supported in advance using {@link
+   * #has(Control)}.
    *
    * @param control The control to check.
    * @return <code>True</code> if the state of the control is enabled, <code>false</code> otherwise.
-   * @throws UnsupportedControlException If the control is not supported. (See {@link
-   *     #has(Control)})
+   * @throws UnsupportedControlException If the control is not supported. (See {@link #has(Control)})
    */
   boolean is(Control control) throws UnsupportedControlException, TrainSimulatorException;
 

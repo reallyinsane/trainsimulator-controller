@@ -23,7 +23,8 @@ public class ControlValue {
   private Float minimum;
   private Float maximum;
 
-  public ControlValue() {}
+  public ControlValue() {
+  }
 
   public Float getCurrent() {
     return this.current;

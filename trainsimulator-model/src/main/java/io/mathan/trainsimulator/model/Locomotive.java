@@ -16,7 +16,6 @@ package io.mathan.trainsimulator.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -28,7 +27,8 @@ public class Locomotive {
   private final List<Control> controls = new ArrayList<>();
   private boolean combinedThrottleBrake;
 
-  public Locomotive() {}
+  public Locomotive() {
+  }
 
   public List<Control> getControls() {
     return this.controls;

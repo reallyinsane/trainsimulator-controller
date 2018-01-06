@@ -18,13 +18,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class GenericControl {
+
   private Integer id;
   private String name;
   private Float current;
   private Float minimum;
   private Float maximum;
 
-  public GenericControl() {}
+  public GenericControl() {
+  }
 
   public Float getCurrent() {
     return this.current;

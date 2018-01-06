@@ -15,6 +15,7 @@
 package io.mathan.trainsimulator.client;
 
 public class Configuration {
+
   public static final String DEFAULT_MULTICAST_HOST = "224.13.9.13";
   public static final int DEFAULT_MULTICAST_PORT = 13912;
   public static final int DEFAULT_REST_PORT = 13913;

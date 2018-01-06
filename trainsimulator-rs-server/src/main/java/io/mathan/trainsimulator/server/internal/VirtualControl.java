@@ -15,6 +15,7 @@
 package io.mathan.trainsimulator.server.internal;
 
 public class VirtualControl {
+
   final Integer id;
   final Float value;
 

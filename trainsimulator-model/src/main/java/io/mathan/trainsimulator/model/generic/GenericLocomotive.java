@@ -16,7 +16,6 @@ package io.mathan.trainsimulator.model.generic;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -28,7 +27,8 @@ public class GenericLocomotive {
   private boolean combinedThrottleBrake;
   private final List<GenericControl> controls = new ArrayList<>();
 
-  public GenericLocomotive() {}
+  public GenericLocomotive() {
+  }
 
   public List<GenericControl> getControls() {
     return this.controls;

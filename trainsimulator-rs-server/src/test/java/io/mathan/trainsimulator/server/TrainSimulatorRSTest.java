@@ -14,10 +14,13 @@
  */
 package io.mathan.trainsimulator.server;
 
+import io.mathan.trainsimulator.model.Control;
+import io.mathan.trainsimulator.model.ControlValue;
+import io.mathan.trainsimulator.model.Locomotive;
+import io.mathan.trainsimulator.server.internal.NativeLibrary;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -29,12 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import io.mathan.trainsimulator.model.Control;
-import io.mathan.trainsimulator.model.ControlValue;
-import io.mathan.trainsimulator.model.Locomotive;
-import io.mathan.trainsimulator.server.TrainSimulatorServer;
-import io.mathan.trainsimulator.server.internal.NativeLibrary;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TrainSimulatorRSTest extends JerseyTest {
@@ -65,7 +62,8 @@ public class TrainSimulatorRSTest extends JerseyTest {
   private static final Float TEST_VIRTUAL_CONTROL_VALUE_PZB_70 = 2f;
   private static final Float TEST_VIRTUAL_CONTROL_VALUE_PZB_85 = 1f;
 
-  @Mock private NativeLibrary mock;
+  @Mock
+  private NativeLibrary mock;
 
   @Override
   protected Application configure() {
@@ -127,7 +125,9 @@ public class TrainSimulatorRSTest extends JerseyTest {
     Assert.assertEquals(TEST_VALUE_MAXIMUM, value.getMaximum());
   }
 
-  /** Verifies that default controls are recognized. */
+  /**
+   * Verifies that default controls are recognized.
+   */
   @Test
   public void defaultControls() {
     Mockito.when(this.mock.GetControllerList())
@@ -141,7 +141,9 @@ public class TrainSimulatorRSTest extends JerseyTest {
     Assert.assertTrue(loco.getControls().contains(Control.Pzb500));
   }
 
-  /** Verifies that mapped controls are recognized. */
+  /**
+   * Verifies that mapped controls are recognized.
+   */
   @Test
   public void mappedControls() {
     Mockito.when(this.mock.GetControllerList())
@@ -155,7 +157,9 @@ public class TrainSimulatorRSTest extends JerseyTest {
     Assert.assertTrue(loco.getControls().contains(Control.Pzb500));
   }
 
-  /** Verifies that virtual controls are recognizes. */
+  /**
+   * Verifies that virtual controls are recognizes.
+   */
   @Test
   public void virtualControls() {
     Mockito.when(this.mock.GetControllerList()).thenReturn(controls(TEST_VIRTUAL_CONTROL_PZB));

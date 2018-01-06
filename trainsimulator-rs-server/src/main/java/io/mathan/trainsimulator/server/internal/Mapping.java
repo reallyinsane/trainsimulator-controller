@@ -23,7 +23,8 @@ public class Mapping {
   private final Map<String, String> simpleMapping = new HashMap<>();
   private final Map<String, List<VirtualMapping>> virtualMapping = new HashMap<>();
 
-  public Mapping() {}
+  public Mapping() {
+  }
 
   public Map<String, String> getSimpleMapping() {
     return this.simpleMapping;
@@ -34,6 +35,7 @@ public class Mapping {
   }
 
   public static class VirtualMapping {
+
     private final String name;
     private final Float value;
 

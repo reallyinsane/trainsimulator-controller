@@ -14,12 +14,7 @@
  */
 package io.mathan.trainsimulator.client.internal;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-
 import io.mathan.trainsimulator.TrainSimulatorException;
 import io.mathan.trainsimulator.TrainSimulatorService;
 import io.mathan.trainsimulator.client.Configuration;
@@ -27,6 +22,9 @@ import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlValue;
 import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
 
 public class TrainSimulatorRSClient implements TrainSimulatorService {
 
@@ -66,8 +64,8 @@ public class TrainSimulatorRSClient implements TrainSimulatorService {
   private String baseUrl() {
     return String.format(
         "http://%s:%s/trainsimulator/",
-        new Object[] {
-          this.configuration.getRestHost(), Integer.valueOf(this.configuration.getRestPort())
+        new Object[]{
+            this.configuration.getRestHost(), Integer.valueOf(this.configuration.getRestPort())
         });
   }
 }
