@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/reallyinsane/trainsimulator-controller.svg?branch=master)](https://travis-ci.org/reallyinsane/trainsimulator-controller)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6b11f46bd5f34e3ba4c91e96b7ccf99c)](https://www.codacy.com/app/reallyinsane/trainsimulator-controller?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=reallyinsane/trainsimulator-controller&amp;utm_campaign=Badge_Grade)
+<a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-apache2-blue.svg"></a>
+
 # trainsimulator-controller
 Client and server components for exchange of controller information and commands between train simulator and devices.
 
@@ -8,7 +12,7 @@ TrainSimulator offers an API to interact with the controls of a loco. Unfortunat
 The server component is located on the Windows PC where TrainSimulator is running and connects to the DLL. To start the server run the JAR with a 32bit JRE like this:
 
 ```
-javaw -jar trainsimulator-rs-server-0.0.1-SNAPSHOT.jar
+javaw -jar trainsimulator-rs-server-0.0.1-SNAPSHOT.jar 
 ```
 After start a new systray icon appears. If the REST service was successfully started you should see the following icon :![Logo running](/trainsimulator-rs-server/src/main/resources/railway-station-green.png). If the TrainSimulator installation could not be found the icon remains blue :: ![Logo not running](/trainsimulator-rs-server/src/main/resources/railway-station-blue.png). If so check the context menu and specify the absolute path of the Railworks.dll. After this you can start the server via the context menu manually.
 
