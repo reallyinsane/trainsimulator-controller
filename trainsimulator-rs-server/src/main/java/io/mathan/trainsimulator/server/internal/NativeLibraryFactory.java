@@ -35,7 +35,7 @@ public class NativeLibraryFactory {
             "SOFTWARE\\WOW6432Node\\railsimulator.com\\railworks",
             "install_path");
     if (!railworksPath.trim().isEmpty()) {
-      railworksPath += "\\plugins\\RailDriver.dll";
+      railworksPath += "\\plugins\\" + (System.getProperty("os.arch").contains("64") ? "RailDriver64.dll" : "RailDriver.dll");
       if (new File(railworksPath).exists()) {
         return railworksPath;
       }
