@@ -1,1 +1,0 @@
-"C:\Program Files (x86)\Java\jdk1.8.0_131\jre\bin\java" -jar target\trainsimulator-rs-server-0.0.1-SNAPSHOT.jar

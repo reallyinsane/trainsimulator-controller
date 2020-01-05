@@ -1,0 +1,54 @@
+################################################################################
+# With this mapping file engine controls can be mapped to API controls.
+# Each line defines a mapping for a certain control. The format is:
+# 
+# <engine control name>[=<engine control value>]=<API control name>
+# 
+# In general there are two mapping types:
+# Case 1 - Rename
+# 
+# In this case the control name used by the engine differs from the API control
+# name. So the mapping defines a simple rename:
+# <engine control name>=<API control name>
+# 
+# Case 2 - Virtual control
+# 
+# In this case the engine uses a single control with different values for multiple
+# API controls. So the mapping defines a control with a certain value to map to
+# an API control:
+# <engine control name>=<engine control value>=<API control name>
+# 
+# The mapping can be defined either in the default.mapping file or a separate file
+# for a certain engine. The filename must be <engine name>.mapping then.
+################################################################################
+# Renaming
+PZB_B40=PZB_40
+PZB_500Hz=PZB_500
+PZB_1000Hz=PZB_1000
+SifaLight=VigilLight
+SifaAlarm=VigilAlarm
+SifaLampe=VigilLight
+SifaOnOff=VigilEnable
+SifaWarnung=VigilAlarm
+CWXSIFAEIN=VigilEnable
+CWXSIFALampe=VigilLight
+CWXSIFATon=VigilAlarm
+CWXSIFAReset=VigilReset
+PZB LM 500Hz=PZB_500
+PZB LM 1000Hz=PZB_1000
+PZB LM Befehl40=PZB_40
+SifaWeg=VigilLight
+
+# Virtual controls
+# OEBB 1144
+PZB LM Betrieb=1=PZB_85
+PZB LM Betrieb=2=PZB_70
+PZB LM Betrieb=3=PZB_55
+#vR BR111
+PZBLM40=PZB_40
+PZBLM70=PZB_70
+PZBLM85=PZB_85
+PZBLM500=PZB_500
+PZBLM1000=PZB_1000
+PZB_1000hz_Control=PZB_1000
+PZB_500hz_Control=PZB_500
