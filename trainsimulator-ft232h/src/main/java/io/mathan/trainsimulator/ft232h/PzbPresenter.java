@@ -2,7 +2,6 @@ package io.mathan.trainsimulator.ft232h;
 
 import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
-import io.mathan.trainsimulator.service.Connector;
 import io.mathan.trainsimulator.service.Event;
 import io.mathan.trainsimulator.service.Present;
 import java.util.HashMap;
