@@ -104,7 +104,19 @@ public class Connector implements InitializingBean {
   }
 
   public void setControlData(Control control, ControlData data) throws TrainSimulatorException, UnsupportedControlException {
-
+    synchronized (controlsMap) {
+      Integer id = controlsMap.get(control);
+      if (id != null) {
+        this.nativeLibrary.SetControllerValue(id, data.getCurrent());
+      } else {
+        synchronized (virtualControlsMap) {
+          VirtualControl virtualControl = virtualControlsMap.get(control);
+          if (virtualControl != null) {
+            this.nativeLibrary.SetControllerValue(virtualControl.getId(), data.getCurrent());
+          }
+        }
+      }
+    }
   }
 
   public GenericLocomotive getGenericLocomotive() throws TrainSimulatorException {

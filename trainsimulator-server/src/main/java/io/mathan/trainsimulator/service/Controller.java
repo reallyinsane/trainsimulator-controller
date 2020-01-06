@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,6 +38,14 @@ public class Controller {
   @GetMapping("/control/{control}")
   public ControlData getControlValue(@PathVariable("control") Control control) throws TrainSimulatorException, UnsupportedControlException {
     return currentData.get(control);
+  }
+
+  @PutMapping("/control/{control}")
+  public void getControlValue(@PathVariable("control") Control control, @RequestParam(name="value") Float value) throws TrainSimulatorException, UnsupportedControlException {
+    ControlData data = new ControlData();
+    data.setCurrent(value);
+    Event event = new Event(control, data);
+    service.raiseEvent(event);
   }
 
   @Present

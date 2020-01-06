@@ -31,9 +31,7 @@ on port 13913. The REST service provides the following methods:
 |GET   |/trainsimulator/locomotive| Information about the current engine with their supported controls.|
 |GET   |/trainsimulator/generic| Information about the current engine in plain format.|
 |GET   |/trainsimulator/control/{control}| Get value of single control with min, max and current.|
-|PUT**   |/trainsimulator/control/{control}| Change value of a single control.|
-
-** Not implemented yet.
+|PUT   |/trainsimulator/control/{control}| Change value of a single control.|
 
 Using the REST service is one way to interact with TrainSimulator API. Another way is to extend the trainsimulator-server application. For handling changes of a control's value an 
 annotated method can be used. Just declare a spring component with a method with io.mathan.trainsimulator.service.Present annotation. This methods accepts a parameter of type
