@@ -18,7 +18,12 @@ public class Ft232h {
       Device dev = devices[0];
       Ft232h access = new Ft232h();
       access.mpsse = new Mpsse(dev);
-      access.mpsse.open();
+      try {
+        access.mpsse.open();
+      } catch(IllegalStateException e) {
+        access.mpsse.close();
+        access.mpsse.open();
+      }
       return access;
     }
 
