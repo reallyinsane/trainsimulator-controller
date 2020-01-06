@@ -40,7 +40,7 @@ public class Controller {
 
   @Present
   public void present(Event event) {
-    this.currentData.put(event.getControl(), event.getValue());
+    this.currentData.put(event.getControl(), event.getData());
   }
 
 }

@@ -73,7 +73,7 @@ public class Service implements Collector {
 
   private void sendToConnector() throws TrainSimulatorException, UnsupportedControlException {
     for(Event event: events) {
-      connector.setControlData(event.getControl(), event.getValue());
+      connector.setControlData(event.getControl(), event.getData());
     }
     this.events.clear();
   }

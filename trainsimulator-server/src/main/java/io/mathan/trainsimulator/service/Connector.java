@@ -258,7 +258,7 @@ public class Connector implements InitializingBean {
   private Mapping getMapping(String loco) {
     Mapping mapping = new Mapping();
 
-    InputStream in = Connector.class.getResourceAsStream(loco + ".mapping");
+    InputStream in = Connector.class.getResourceAsStream("/"+loco + ".mapping");
     if (in!=null) {
       return loadMapping(in);
     }

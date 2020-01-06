@@ -33,7 +33,7 @@ public class Event {
     return this.control;
   }
 
-  public ControlData getValue() {
+  public ControlData getData() {
     return this.controlData;
   }
 }
