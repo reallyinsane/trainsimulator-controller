@@ -56,7 +56,7 @@ public class PzbPresenter implements InitializingBean {
   @Present
   public void present(Event event) {
     if(map.containsKey(event.getControl())) {
-      if(Float.valueOf(1.0F).equals(event.getValue().getCurrent())) {
+      if(Float.valueOf(1.0F).equals(event.getData().getCurrent())) {
         ft232h.on(map.get(event.getControl()));
       } else {
         ft232h.off(map.get(event.getControl()));
