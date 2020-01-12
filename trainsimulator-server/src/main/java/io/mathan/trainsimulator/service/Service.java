@@ -19,6 +19,7 @@ import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
+import io.mathan.trainsimulator.service.jni.NativeConnector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Main component managing event handling. This component is a {@link Collector} and collects events to forward to TrainSimulator. Scheduled every {@link #RATE_EXECUTION} milliseconds pending events
- * will be forwared to the {@link Connector}. Then updates from the Connector will be sent to the {@link Presenter}.
+ * will be forwared to the {@link NativeConnector}. Then updates from the Connector will be sent to the {@link Presenter}.
  */
 @Component
 public class Service implements Collector {
