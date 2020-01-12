@@ -12,18 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.mathan.trainsimulator.service;
+package io.mathan.trainsimulator.raspberry;
 
-import io.mathan.trainsimulator.model.Control;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-/**
- * Converter to convert a Control specified as String to the regarding enum value.
- */
-public class StringToControlConverter implements Converter<String, Control> {
-
-  @Override
-  public Control convert(String s) {
-    return Control.fromString(s);
+@SpringBootApplication
+@EnableScheduling
+@ComponentScan(basePackages = {"io.mathan.trainsimulator.service", "io.mathan.trainsimulator.raspberry", "io.mathan.trainsimulator.client"})
+public class RaspberryApplication {
+  public static void main(String[] args) {
+    SpringApplication.run(RaspberryApplication.class, args);
   }
 }
