@@ -19,11 +19,6 @@
       <artifactId>trainsimulator-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>io.mathan.trainsimulator</groupId>
-      <artifactId>trainsimulator-server</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 
 </project>
