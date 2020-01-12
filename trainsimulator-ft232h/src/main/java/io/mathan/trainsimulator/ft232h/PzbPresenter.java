@@ -28,6 +28,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+/**
+ * Component consuming {@link Event} and delegating them to the pins on FT232h.
+ */
 @Component
 @Profile("pzb")
 public class PzbPresenter implements InitializingBean {
@@ -67,6 +70,9 @@ public class PzbPresenter implements InitializingBean {
     }
   }
 
+  /**
+   * Registerd method to receive events which are forwared to FT232h.
+   */
   @Present
   public void present(Event event) {
     if(map.containsKey(event.getControl())) {
@@ -79,6 +85,9 @@ public class PzbPresenter implements InitializingBean {
     }
   }
 
+  /**
+   * Initialization will trigger all PINs on and off to verify functionality.
+   */
   @Override
   public void afterPropertiesSet() throws Exception {
     ft232h = Ft232h.getInstance();

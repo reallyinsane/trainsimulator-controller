@@ -15,6 +15,13 @@
 
 package io.mathan.trainsimulator.service;
 
+/**
+ * The Collector is responsible for collecting all {@link Event} which should be forwared to TrainSimulator.
+ */
 public interface Collector {
+
+  /**
+   * Raises the event of a control.
+   */
   void raiseEvent(Event event);
 }

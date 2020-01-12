@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -34,6 +37,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Presenter implements BeanPostProcessor {
+
+  private Logger logger = LoggerFactory.getLogger(Presenter.class);
 
   private List<PresentAnnotatedBeanMethod> anyControl = new ArrayList<>();
   private Map<Control, List<PresentAnnotatedBeanMethod>> specificControl = new HashMap<>();
@@ -61,7 +66,7 @@ public class Presenter implements BeanPostProcessor {
           try {
             bean.method.invoke(bean.bean, event);
           } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace(); //TODO logging
+            logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean));
           }
         }
       }
@@ -69,7 +74,7 @@ public class Presenter implements BeanPostProcessor {
         try {
           bean.method.invoke(bean.bean, event);
         } catch (IllegalAccessException | InvocationTargetException e) {
-          e.printStackTrace(); //TODO logging
+          logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean));
         }
       }
   }

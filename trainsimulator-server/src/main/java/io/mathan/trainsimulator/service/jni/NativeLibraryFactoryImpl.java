@@ -25,6 +25,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+/**
+ * Default implementation for production mode loading {@link NativeLibrary} via JNI and accessing the Windows DLL.
+ */
 @Component
 @Profile("production")
 public class NativeLibraryFactoryImpl implements NativeLibraryFactory, InitializingBean {

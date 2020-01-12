@@ -27,8 +27,16 @@ import java.util.Objects;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+
+/**
+ * Main component managing event handling. This component is a {@link Collector} and collects events to forward to TrainSimulator. Scheduled every {@link #RATE_EXECUTION} milliseconds pending events
+ * will be forwared to the {@link Connector}. Then updates from the Connector will be sent to the {@link Presenter}.
+ */
 @Component
 public class Service implements Collector {
+
+  private static final int RATE_EXECUTION = 100;
+  private static final int RATE_LOCOMOTIVE = 20000;
 
   private Locomotive locomotive;
   private Map<Control, ControlData> data = new HashMap<>();
@@ -56,7 +64,7 @@ public class Service implements Collector {
     this.events.add(event);
   }
 
-  @Scheduled(fixedRate = 100)
+  @Scheduled(fixedRate = RATE_EXECUTION)
   public synchronized void execute() throws Exception {
     if (this.locomotive == null) {
       this.locomotive = connector.getLocomotive();
@@ -66,7 +74,7 @@ public class Service implements Collector {
     this.data.putAll(updates);
     this.presenter.present(updates);
   }
-  @Scheduled(fixedRate = 20000)
+  @Scheduled(fixedRate = RATE_LOCOMOTIVE)
   public synchronized void updateLocomotive() throws TrainSimulatorException {
     this.locomotive = connector.getLocomotive();
   }

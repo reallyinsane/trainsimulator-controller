@@ -15,6 +15,13 @@
 
 package io.mathan.trainsimulator.service.jni;
 
+/**
+ * This factory can create an instance of {@link NativeLibrary} to communicate with TrainSimulator.
+ */
 public interface NativeLibraryFactory {
+
+  /**
+   * Creates an instance of {@link NativeLibrary}.
+   */
   NativeLibrary getInstance();
 }

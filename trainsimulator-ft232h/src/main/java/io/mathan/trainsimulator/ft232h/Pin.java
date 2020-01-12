@@ -14,6 +14,9 @@
  */
 package io.mathan.trainsimulator.ft232h;
 
+/**
+ * Enum for the GPIO pin on the FT232h breakout board. Each GPIO pin can be used for one control.
+ */
 public enum Pin {
     C0((byte) 0x01, true),
     C1((byte) 0x02, true),
@@ -31,7 +34,13 @@ public enum Pin {
     D5((byte) 0x20, false),
     D6((byte) 0x40, false),
     D7((byte) 0x80, false);
+    /**
+     * Address of the pin.
+     */
     private final byte address;
+    /**
+     * True, if pin is accessed through high data bits or false for low data bits. (All Cx are high and Dx low data bits)
+     */
     private final boolean high;
 
     Pin(byte address, boolean high) {

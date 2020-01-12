@@ -22,9 +22,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation for declaring a method to receive {@link Event events}. The annotated method needs a single parameter of type {@link Event}.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 @Documented
 public @interface Present {
+
+  /**
+   * Controls to receive events for can be specified optional. By default events of all controls will be received.
+   * @return
+   */
   Control[] controls() default {};
 }

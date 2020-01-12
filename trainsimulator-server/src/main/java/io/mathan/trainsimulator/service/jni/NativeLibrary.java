@@ -17,6 +17,9 @@ package io.mathan.trainsimulator.service.jni;
 
 import com.sun.jna.Library;
 
+/**
+ * Interface for accessing the Windows DLL of TrainSimulator.
+ */
 public interface NativeLibrary extends Library {
 
   String GetControllerList();

@@ -37,14 +37,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
+/**
+ * The Connector is responsible for communication with TrainSimulator API via {@link NativeLibrary}. Therefor a {@link NativeLibraryFactory} is necessary to create the API interface.
+ */
 @Component
 public class Connector implements InitializingBean {
 
   private static final String DELIMITER_LOCO = ".:.";
   private static final String DELIMITER_CONTROLLER = "::";
+
+  private Logger logger = LoggerFactory.getLogger(Connector.class);
 
   private NativeLibraryFactory factory;
   private NativeLibrary nativeLibrary;
@@ -64,12 +71,14 @@ public class Connector implements InitializingBean {
       locomotive.setProduct(tokenizer.nextToken());
       locomotive.setEngine(tokenizer.nextToken());
       locomotive.setCombinedThrottleBrake(this.nativeLibrary.GetRailSimCombinedThrottleBrake());
+      Mapping defaultMapping = getMapping("default");
+      Mapping locoMapping = getMapping(locomotive.getEngine());
       locomotive
           .getControls()
-          .addAll(getControls(getMapping("default"), getMapping(locomotive.getEngine())));
+          .addAll(getControls(defaultMapping, locoMapping));
       locomotive
           .getControls()
-          .addAll(getVirtualControls(getMapping("default"), getMapping(locomotive.getEngine())));
+          .addAll(getVirtualControls(defaultMapping, locoMapping));
     }
     return locomotive;  }
 
@@ -269,14 +278,10 @@ public class Connector implements InitializingBean {
 
   private Mapping getMapping(String loco) {
     Mapping mapping = new Mapping();
-
-    InputStream in = Connector.class.getResourceAsStream("/"+loco + ".mapping");
-    if (in!=null) {
-      return loadMapping(in);
-    }
-
     File file = new File(loco + ".mapping");
+    InputStream in;
     if (file.exists()) {
+      logger.info("using mapping found in {}", file.getAbsolutePath());
       try {
         in = new FileInputStream(file);
         return loadMapping(in);
@@ -284,6 +289,12 @@ public class Connector implements InitializingBean {
         e.printStackTrace();
       }
     }
+    in = Connector.class.getResourceAsStream("/"+loco + ".mapping");
+    if (in!=null) {
+      logger.info("using mapping from classpath for {}.mapping", loco);
+      return loadMapping(in);
+    }
+
     return mapping;
   }  
 }

@@ -17,6 +17,9 @@ package io.mathan.trainsimulator.service;
 import io.mathan.trainsimulator.model.Control;
 import org.springframework.core.convert.converter.Converter;
 
+/**
+ * Converter to convert a Control specified as String to the regarding enum value.
+ */
 public class StringToControlConverter implements Converter<String, Control> {
 
   @Override

@@ -55,7 +55,7 @@ public class Controller {
   }
 
   @PutMapping("/control/{control}")
-  public void getControlValue(@PathVariable("control") Control control, @RequestParam(name="value") Float value) throws TrainSimulatorException, UnsupportedControlException {
+  public void setControlValue(@PathVariable("control") Control control, @RequestParam(name="value") Float value) throws TrainSimulatorException, UnsupportedControlException {
     ControlData data = new ControlData();
     data.setCurrent(value);
     Event event = new Event(control, data);
