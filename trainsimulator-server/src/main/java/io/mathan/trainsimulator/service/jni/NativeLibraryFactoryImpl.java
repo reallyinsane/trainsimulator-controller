@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Default implementation for production mode loading {@link NativeLibrary} via JNI and accessing the Windows DLL.
  */
 @Component
-@Profile("server")
+@Profile("native")
 public class NativeLibraryFactoryImpl implements NativeLibraryFactory, InitializingBean {
 
   private static NativeLibrary instance = null;

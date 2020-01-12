@@ -46,7 +46,7 @@ import org.springframework.stereotype.Component;
  * The Connector is responsible for communication with TrainSimulator API via {@link NativeLibrary}. Therefor a {@link NativeLibraryFactory} is necessary to create the API interface.
  */
 @Component
-@Profile("server")
+@Profile("native")
 public class NativeConnector implements InitializingBean, Connector {
 
   private static final String DELIMITER_LOCO = ".:.";
