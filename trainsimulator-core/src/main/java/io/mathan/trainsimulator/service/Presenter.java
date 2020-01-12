@@ -66,7 +66,7 @@ public class Presenter implements BeanPostProcessor {
           try {
             bean.method.invoke(bean.bean, event);
           } catch (IllegalAccessException | InvocationTargetException e) {
-            logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean));
+            logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean), e);
           }
         }
       }
@@ -74,7 +74,7 @@ public class Presenter implements BeanPostProcessor {
         try {
           bean.method.invoke(bean.bean, event);
         } catch (IllegalAccessException | InvocationTargetException e) {
-          logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean));
+          logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean), e);
         }
       }
   }
@@ -94,6 +94,7 @@ public class Presenter implements BeanPostProcessor {
           listener.bean = bean;
           listener.method = method;
           anyControl.add(listener);
+          logger.info("@Present for {}.{}", bean.getClass().getName(), method.getName());
         }
       }
     }

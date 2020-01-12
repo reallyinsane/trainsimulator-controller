@@ -19,11 +19,19 @@ import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
+import io.mathan.trainsimulator.service.Presenter.PresentAnnotatedBeanMethod;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.FatalBeanException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +41,8 @@ import org.springframework.stereotype.Component;
  * will be forwared to the {@link Connector}. Then updates from the Connector will be sent to the {@link Presenter}.
  */
 @Component
-public class Service implements Collector {
+public class Service implements Collector, BeanPostProcessor {
+  private Logger logger = LoggerFactory.getLogger(Service.class);
 
   private static final int RATE_EXECUTION = 100;
   private static final int RATE_LOCOMOTIVE = 20000;
@@ -42,6 +51,7 @@ public class Service implements Collector {
   private Map<Control, ControlData> data = new HashMap<>();
 
   private List<Event> events = new ArrayList<>();
+  private List<LocoUpdateBeanMethod> locoUpdateBeanMethods = new ArrayList<>();
 
   private final Presenter presenter;
   private final Connector connector;
@@ -74,9 +84,17 @@ public class Service implements Collector {
     this.data.putAll(updates);
     this.presenter.present(updates);
   }
+
   @Scheduled(fixedRate = RATE_LOCOMOTIVE)
   public synchronized void updateLocomotive() throws TrainSimulatorException {
     this.locomotive = connector.getLocomotive();
+    for(LocoUpdateBeanMethod bean:locoUpdateBeanMethods) {
+      try {
+        bean.method.invoke(bean.bean, locomotive);
+      } catch (IllegalAccessException | InvocationTargetException e) {
+        logger.error(String.format("Could not update loco %s on component %s", locomotive, bean.bean));
+      }
+    }
   }
 
   private void sendToConnector() throws TrainSimulatorException, UnsupportedControlException {
@@ -96,5 +114,26 @@ public class Service implements Collector {
       }
     }
     return dataToUpdate;
+  }
+
+  public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    for (Method method: bean.getClass().getDeclaredMethods()) {
+      if (method.isAnnotationPresent(LocoUpdate.class)) {
+        LocoUpdate annotation = method.getDeclaredAnnotation(LocoUpdate.class);
+        if (method.getParameterCount() != 1 || !Locomotive.class.equals(method.getParameterTypes()[0])) {
+          throw new FatalBeanException(String.format("Methods annotated with @LocoUpdate need a parameter of type %s", Locomotive.class.getName()));
+        }
+        LocoUpdateBeanMethod listener = new LocoUpdateBeanMethod();
+        listener.bean = bean;
+        listener.method = method;
+        locoUpdateBeanMethods.add(listener);
+      }
+    }
+    return bean;
+  }
+
+  class LocoUpdateBeanMethod {
+    Object bean;
+    Method method;
   }
 }
