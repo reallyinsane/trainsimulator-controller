@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>io.mathan.trainsimulator</groupId>
+    <artifactId>trainsimulator-parent</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <relativePath>../trainsimulator-parent</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.mathan.trainsimulator</groupId>
+  <artifactId>trainsimulator-raspberry</artifactId>
+  <version>1.1-SNAPSHOT</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.mathan.trainsimulator</groupId>
+      <artifactId>trainsimulator-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-gpio-extension</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-device</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>

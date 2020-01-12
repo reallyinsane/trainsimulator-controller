@@ -13,6 +13,8 @@
     <module>trainsimulator-parent</module>
     <module>trainsimulator-server</module>
     <module>trainsimulator-ft232h</module>
+    <module>trainsimulator-client</module>
+    <module>trainsimulator-raspberry</module>
   </modules>
 
 
