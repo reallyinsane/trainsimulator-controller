@@ -13,23 +13,19 @@
  * limitations under the License.
  */
 
-package io.mathan.trainsimulator.service.presenter;
+package io.mathan.trainsimulator.presenter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.mathan.trainsimulator.model.Control;
-import io.mathan.trainsimulator.model.ControlData;
-import io.mathan.trainsimulator.service.Event;
 import io.mathan.trainsimulator.service.Present;
 import io.mathan.trainsimulator.service.Presenter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Import;
 
-public class PresenterTest {
-  private static int calls = 0;
+public class PresenterWrongSignatureTest {
 
   @TestConfiguration
   @Import({Presenter.class, PresentBean.class})
@@ -37,38 +33,19 @@ public class PresenterTest {
 
   }
 
-  public static class PresentBean {
+  static class PresentBean {
     @Present(controls = {Control.Pzb55})
-    public void present(Event event) {
-      calls++;
+    public void present(Control control) {
+
     }
   }
 
   @Test
-  public void pzb55() {
+  public void failed() {
     ApplicationContextRunner contextRunner = new ApplicationContextRunner()
         .withUserConfiguration(Configuration.class)
         .run(context -> {
-          assertThat(context).getBean(Presenter.class).isNotNull();
-          Control control = Control.Pzb55;
-          ControlData data = new ControlData();
-          int calls = PresenterTest.calls;
-          context.getBean(Presenter.class).present(control, data);
-          Assert.assertTrue(PresenterTest.calls == calls + 1);
-        });
-  }
-
-  @Test
-  public void pzb70() {
-    ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-        .withUserConfiguration(Configuration.class)
-        .run(context -> {
-          assertThat(context).getBean(Presenter.class).isNotNull();
-          Control control = Control.Pzb70;
-          ControlData data = new ControlData();
-          int calls = PresenterTest.calls;
-          context.getBean(Presenter.class).present(control, data);
-          Assert.assertTrue(PresenterTest.calls == calls);
+          assertThat(context).hasFailed();
         });
   }
 

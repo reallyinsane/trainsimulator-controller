@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package io.mathan.trainsimulator.service.presenter;
+package io.mathan.trainsimulator.presenter;
 
 import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
