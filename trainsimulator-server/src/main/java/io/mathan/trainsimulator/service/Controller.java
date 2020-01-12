@@ -20,6 +20,7 @@ import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,26 +40,26 @@ public class Controller {
     this.service = service;
   }
 
-  @GetMapping("/locomotive")
+  @GetMapping(value= "/locomotive", produces = {MediaType.APPLICATION_JSON_VALUE})
   public Locomotive getLocomotive() throws TrainSimulatorException {
     return service.getLocomotive();
   }
 
-  @GetMapping("/generic")
+  @GetMapping(value= "/generic", produces = {MediaType.APPLICATION_JSON_VALUE})
   public GenericLocomotive getGenericLocomotive() throws TrainSimulatorException {
     return service.getGenericLocomotive();
   }
 
-  @GetMapping("/control/{control}")
-  public ControlData getControlValue(@PathVariable("control") Control control) throws TrainSimulatorException, UnsupportedControlException {
-    return currentData.get(control);
+  @GetMapping(value = "/control/{control}", produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ControlData getControlValue(@PathVariable("control") String control) throws TrainSimulatorException, UnsupportedControlException {
+    return currentData.get(Control.valueOf(control));
   }
 
   @PutMapping("/control/{control}")
-  public void setControlValue(@PathVariable("control") Control control, @RequestParam(name="value") Float value) throws TrainSimulatorException, UnsupportedControlException {
+  public void setControlValue(@PathVariable("control") String control, @RequestParam(name="value") Float value) throws TrainSimulatorException, UnsupportedControlException {
     ControlData data = new ControlData();
     data.setCurrent(value);
-    Event event = new Event(control, data);
+    Event event = new Event(Control.valueOf(control), data);
     service.raiseEvent(event);
   }
 
