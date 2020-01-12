@@ -66,4 +66,13 @@ public class ControlData {
   public int hashCode() {
     return Objects.hash(current, minimum, maximum);
   }
+
+  @Override
+  public String toString() {
+    return "ControlData{" +
+        "current=" + current +
+        ", minimum=" + minimum +
+        ", maximum=" + maximum +
+        '}';
+  }
 }
