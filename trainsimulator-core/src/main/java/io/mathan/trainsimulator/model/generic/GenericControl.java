@@ -27,36 +27,36 @@ public class GenericControl {
     return this.current;
   }
 
-  public Integer getId() {
-    return this.id;
-  }
-
-  public Float getMaximum() {
-    return this.maximum;
-  }
-
-  public Float getMinimum() {
-    return this.minimum;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
   public void setCurrent(Float current) {
     this.current = current;
+  }
+
+  public Integer getId() {
+    return this.id;
   }
 
   public void setId(Integer id) {
     this.id = id;
   }
 
+  public Float getMaximum() {
+    return this.maximum;
+  }
+
   public void setMaximum(Float maximum) {
     this.maximum = maximum;
   }
 
+  public Float getMinimum() {
+    return this.minimum;
+  }
+
   public void setMinimum(Float minimum) {
     this.minimum = minimum;
+  }
+
+  public String getName() {
+    return this.name;
   }
 
   public void setName(String name) {

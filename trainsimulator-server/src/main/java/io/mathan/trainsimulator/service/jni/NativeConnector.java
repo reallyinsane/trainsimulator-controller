@@ -51,14 +51,11 @@ public class NativeConnector implements InitializingBean, Connector {
 
   private static final String DELIMITER_LOCO = ".:.";
   private static final String DELIMITER_CONTROLLER = "::";
-
-  private Logger logger = LoggerFactory.getLogger(NativeConnector.class);
-
-  private NativeLibraryFactory factory;
-  private NativeLibrary nativeLibrary;
-
   private final Map<Control, Integer> controlsMap = new HashMap<>();
   private final Map<Control, VirtualControl> virtualControlsMap = new HashMap<>();
+  private Logger logger = LoggerFactory.getLogger(NativeConnector.class);
+  private NativeLibraryFactory factory;
+  private NativeLibrary nativeLibrary;
 
   public NativeConnector(NativeLibraryFactory factory) {
     this.factory = factory;
@@ -82,7 +79,8 @@ public class NativeConnector implements InitializingBean, Connector {
           .getControls()
           .addAll(getVirtualControls(defaultMapping, locoMapping));
     }
-    return locomotive;  }
+    return locomotive;
+  }
 
   @Override
   public ControlData getControlData(Control control) throws TrainSimulatorException, UnsupportedControlException {
@@ -245,6 +243,7 @@ public class NativeConnector implements InitializingBean, Connector {
     }
     return null;
   }
+
   private Mapping loadMapping(InputStream in) {
     Mapping mapping = new Mapping();
     try {
@@ -294,12 +293,12 @@ public class NativeConnector implements InitializingBean, Connector {
         e.printStackTrace();
       }
     }
-    in = NativeConnector.class.getResourceAsStream("/"+loco + ".mapping");
-    if (in!=null) {
+    in = NativeConnector.class.getResourceAsStream("/" + loco + ".mapping");
+    if (in != null) {
       logger.info("using mapping from classpath for {}.mapping", loco);
       return loadMapping(in);
     }
 
     return mapping;
-  }  
+  }
 }

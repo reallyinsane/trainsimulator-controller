@@ -27,19 +27,6 @@ import org.springframework.context.annotation.Import;
 
 public class PresenterWrongSignatureTest {
 
-  @TestConfiguration
-  @Import({Presenter.class, PresentBean.class})
-  static class Configuration {
-
-  }
-
-  static class PresentBean {
-    @Present(controls = {Control.Pzb55})
-    public void present(Control control) {
-
-    }
-  }
-
   @Test
   public void failed() {
     ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -47,6 +34,20 @@ public class PresenterWrongSignatureTest {
         .run(context -> {
           assertThat(context).hasFailed();
         });
+  }
+
+  @TestConfiguration
+  @Import({Presenter.class, PresentBean.class})
+  static class Configuration {
+
+  }
+
+  static class PresentBean {
+
+    @Present(controls = {Control.Pzb55})
+    public void present(Control control) {
+
+    }
   }
 
 }

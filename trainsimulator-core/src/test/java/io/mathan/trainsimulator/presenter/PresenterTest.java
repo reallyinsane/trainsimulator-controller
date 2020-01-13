@@ -29,20 +29,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Import;
 
 public class PresenterTest {
+
   private static int calls = 0;
-
-  @TestConfiguration
-  @Import({Presenter.class, PresentBean.class})
-  static class Configuration {
-
-  }
-
-  public static class PresentBean {
-    @Present(controls = {Control.Pzb55})
-    public void present(Event event) {
-      calls++;
-    }
-  }
 
   @Test
   public void pzb55() {
@@ -70,6 +58,20 @@ public class PresenterTest {
           context.getBean(Presenter.class).present(control, data);
           Assert.assertTrue(PresenterTest.calls == calls);
         });
+  }
+
+  @TestConfiguration
+  @Import({Presenter.class, PresentBean.class})
+  static class Configuration {
+
+  }
+
+  public static class PresentBean {
+
+    @Present(controls = {Control.Pzb55})
+    public void present(Event event) {
+      calls++;
+    }
   }
 
 }

@@ -28,20 +28,20 @@ public class ControlData {
     return this.current;
   }
 
-  public Float getMaximum() {
-    return this.maximum;
-  }
-
-  public Float getMinimum() {
-    return this.minimum;
-  }
-
   public void setCurrent(Float current) {
     this.current = current;
   }
 
+  public Float getMaximum() {
+    return this.maximum;
+  }
+
   public void setMaximum(Float maximum) {
     this.maximum = maximum;
+  }
+
+  public Float getMinimum() {
+    return this.minimum;
   }
 
   public void setMinimum(Float minimum) {

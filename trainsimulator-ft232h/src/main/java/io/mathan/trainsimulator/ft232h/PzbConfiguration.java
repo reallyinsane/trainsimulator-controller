@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "pzb")
 @Profile("pzb")
 public class PzbConfiguration {
+
   private String pzb55;
   private String pzb70;
   private String pzb85;

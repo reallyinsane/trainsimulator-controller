@@ -32,7 +32,6 @@ public @interface Present {
 
   /**
    * Controls to receive events for can be specified optional. By default events of all controls will be received.
-   * @return
    */
   Control[] controls() default {};
 }

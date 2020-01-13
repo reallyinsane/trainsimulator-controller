@@ -44,28 +44,28 @@ public class PzbPresenter implements InitializingBean {
 
   public PzbPresenter(PzbConfiguration configuration) {
     this.configuration = configuration;
-    if(StringUtils.isNotBlank(configuration.getPzb55())) {
+    if (StringUtils.isNotBlank(configuration.getPzb55())) {
       map.put(Control.Pzb55, Pin.valueOf(configuration.getPzb55()));
     }
-    if(StringUtils.isNotBlank(configuration.getPzb70())) {
+    if (StringUtils.isNotBlank(configuration.getPzb70())) {
       map.put(Control.Pzb70, Pin.valueOf(configuration.getPzb70()));
     }
-    if(StringUtils.isNotBlank(configuration.getPzb85())) {
+    if (StringUtils.isNotBlank(configuration.getPzb85())) {
       map.put(Control.Pzb85, Pin.valueOf(configuration.getPzb85()));
     }
-    if(StringUtils.isNotBlank(configuration.getPzb40())) {
+    if (StringUtils.isNotBlank(configuration.getPzb40())) {
       map.put(Control.Pzb40, Pin.valueOf(configuration.getPzb40()));
     }
-    if(StringUtils.isNotBlank(configuration.getPzb500())) {
+    if (StringUtils.isNotBlank(configuration.getPzb500())) {
       map.put(Control.Pzb500, Pin.valueOf(configuration.getPzb500()));
     }
-    if(StringUtils.isNotBlank(configuration.getPzb1000())) {
+    if (StringUtils.isNotBlank(configuration.getPzb1000())) {
       map.put(Control.Pzb1000, Pin.valueOf(configuration.getPzb1000()));
     }
-    if(StringUtils.isNotBlank(configuration.getSifaLight())) {
+    if (StringUtils.isNotBlank(configuration.getSifaLight())) {
       map.put(Control.SifaLight, Pin.valueOf(configuration.getSifaLight()));
     }
-    if(StringUtils.isNotBlank(configuration.getSifaWarn())) {
+    if (StringUtils.isNotBlank(configuration.getSifaWarn())) {
       map.put(Control.SifaAlarm, Pin.valueOf(configuration.getSifaWarn()));
     }
   }
@@ -75,8 +75,8 @@ public class PzbPresenter implements InitializingBean {
    */
   @Present
   public void present(Event event) {
-    if(map.containsKey(event.getControl())) {
-      if(Float.valueOf(1.0F).equals(event.getData().getCurrent())) {
+    if (map.containsKey(event.getControl())) {
+      if (Float.valueOf(1.0F).equals(event.getData().getCurrent())) {
         ft232h.on(map.get(event.getControl()));
       } else {
         ft232h.off(map.get(event.getControl()));
@@ -93,7 +93,7 @@ public class PzbPresenter implements InitializingBean {
     ft232h = Ft232h.getInstance();
     logger.info("startup test started");
     Control[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
-    for(Control control:controls) {
+    for (Control control : controls) {
       logger.info(String.format("%s ON", control.name()));
       present(getOnEvent(control));
       Thread.sleep(500);

@@ -20,11 +20,11 @@ import java.util.List;
 
 public class GenericLocomotive {
 
+  private final List<GenericControl> controls = new ArrayList<>();
   private String provider;
   private String product;
   private String engine;
   private boolean combinedThrottleBrake;
-  private final List<GenericControl> controls = new ArrayList<>();
 
   public List<GenericControl> getControls() {
     return this.controls;
@@ -34,12 +34,24 @@ public class GenericLocomotive {
     return this.engine;
   }
 
+  public void setEngine(String engine) {
+    this.engine = engine;
+  }
+
   public String getProduct() {
     return this.product;
   }
 
+  public void setProduct(String product) {
+    this.product = product;
+  }
+
   public String getProvider() {
     return this.provider;
+  }
+
+  public void setProvider(String provider) {
+    this.provider = provider;
   }
 
   public boolean isCombinedThrottleBrake() {
@@ -48,17 +60,5 @@ public class GenericLocomotive {
 
   public void setCombinedThrottleBrake(boolean combinedThrottleBrake) {
     this.combinedThrottleBrake = combinedThrottleBrake;
-  }
-
-  public void setEngine(String engine) {
-    this.engine = engine;
-  }
-
-  public void setProduct(String product) {
-    this.product = product;
-  }
-
-  public void setProvider(String provider) {
-    this.provider = provider;
   }
 }

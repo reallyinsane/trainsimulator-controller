@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @ComponentScan(basePackages = {"io.mathan.trainsimulator.service", "io.mathan.trainsimulator.ft232h"})
 public class Ft232hApplication {
+
   public static void main(String[] args) {
     SpringApplication.run(Ft232hApplication.class, args);
   }

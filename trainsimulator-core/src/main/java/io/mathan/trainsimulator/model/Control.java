@@ -38,10 +38,6 @@ public enum Control {
     this.value = value;
   }
 
-  public String getValue() {
-    return this.value;
-  }
-
   public static Control fromString(String value) {
     for (Control control : Control.values()) {
       if (control.value.equals(value)) {
@@ -49,5 +45,9 @@ public enum Control {
       }
     }
     return null;
+  }
+
+  public String getValue() {
+    return this.value;
   }
 }

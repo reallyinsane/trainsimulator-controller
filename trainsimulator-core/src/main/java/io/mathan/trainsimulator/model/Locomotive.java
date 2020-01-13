@@ -20,10 +20,10 @@ import java.util.List;
 
 public class Locomotive {
 
+  private final List<Control> controls = new ArrayList<>();
   private String provider;
   private String product;
   private String engine;
-  private final List<Control> controls = new ArrayList<>();
   private boolean combinedThrottleBrake;
 
   public List<Control> getControls() {
@@ -34,20 +34,20 @@ public class Locomotive {
     return this.engine;
   }
 
-  public String getProduct() {
-    return this.product;
-  }
-
-  public String getProvider() {
-    return this.provider;
-  }
-
   public void setEngine(String engine) {
     this.engine = engine;
   }
 
+  public String getProduct() {
+    return this.product;
+  }
+
   public void setProduct(String product) {
     this.product = product;
+  }
+
+  public String getProvider() {
+    return this.provider;
   }
 
   public void setProvider(String provider) {

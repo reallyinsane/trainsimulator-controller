@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -32,8 +31,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
 /**
- * The Presenter component is used to delegate updates to certain controls to component methods annotated with {@link Present}. All possible component methods are detected using a
- * {@link BeanPostProcessor}.
+ * The Presenter component is used to delegate updates to certain controls to component methods annotated with {@link Present}. All possible component methods are detected using a {@link
+ * BeanPostProcessor}.
  */
 @Component
 public class Presenter implements BeanPostProcessor {
@@ -45,6 +44,7 @@ public class Presenter implements BeanPostProcessor {
 
   /**
    * Initiates an update of the presentation for the given controls.
+   *
    * @param updates The controls with their new values.
    */
   public void present(Map<Control, ControlData> updates) {
@@ -55,41 +55,42 @@ public class Presenter implements BeanPostProcessor {
 
   /**
    * Initiates an update of the presentation for the given control.
+   *
    * @param control The control.
    * @param data The new value.
    */
   public void present(Control control, ControlData data) {
-      List<PresentAnnotatedBeanMethod> beans = specificControl.get(control);
+    List<PresentAnnotatedBeanMethod> beans = specificControl.get(control);
     Event event = new Event(control, data);
-      if(beans!=null) {
-        for(PresentAnnotatedBeanMethod bean:beans) {
-          try {
-            bean.method.invoke(bean.bean, event);
-          } catch (IllegalAccessException | InvocationTargetException e) {
-            logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean), e);
-          }
-        }
-      }
-      for(PresentAnnotatedBeanMethod bean: anyControl) {
+    if (beans != null) {
+      for (PresentAnnotatedBeanMethod bean : beans) {
         try {
           bean.method.invoke(bean.bean, event);
         } catch (IllegalAccessException | InvocationTargetException e) {
           logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean), e);
         }
       }
+    }
+    for (PresentAnnotatedBeanMethod bean : anyControl) {
+      try {
+        bean.method.invoke(bean.bean, event);
+      } catch (IllegalAccessException | InvocationTargetException e) {
+        logger.error(String.format("Could not present event for control %s on component %s", control, bean.bean), e);
+      }
+    }
   }
 
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-    for (Method method: bean.getClass().getDeclaredMethods()) {
+    for (Method method : bean.getClass().getDeclaredMethods()) {
       if (method.isAnnotationPresent(Present.class)) {
         Present annotation = method.getDeclaredAnnotation(Present.class);
         if (method.getParameterCount() != 1 || !Event.class.equals(method.getParameterTypes()[0])) {
           throw new FatalBeanException(String.format("Methods annotated with @Present need a parameter of type %s", Event.class.getName()));
         }
-        for(Control control: annotation.controls()) {
+        for (Control control : annotation.controls()) {
           addMethod(control, bean, method);
         }
-        if(annotation.controls().length == 0) {
+        if (annotation.controls().length == 0) {
           PresentAnnotatedBeanMethod listener = new PresentAnnotatedBeanMethod();
           listener.bean = bean;
           listener.method = method;
@@ -103,6 +104,7 @@ public class Presenter implements BeanPostProcessor {
 
   /**
    * Adds a components method to the registered methods for a certain control.
+   *
    * @param control The control the component method is registered for.
    * @param bean The component.
    * @param method The annotated method.
@@ -119,6 +121,7 @@ public class Presenter implements BeanPostProcessor {
    * Identifies a certain bean method annotated with {@link Present}.
    */
   class PresentAnnotatedBeanMethod {
+
     Object bean;
     Method method;
   }

@@ -40,12 +40,12 @@ public class Controller {
     this.service = service;
   }
 
-  @GetMapping(value= "/locomotive", produces = {MediaType.APPLICATION_JSON_VALUE})
+  @GetMapping(value = "/locomotive", produces = {MediaType.APPLICATION_JSON_VALUE})
   public Locomotive getLocomotive() throws TrainSimulatorException {
     return service.getLocomotive();
   }
 
-  @GetMapping(value= "/generic", produces = {MediaType.APPLICATION_JSON_VALUE})
+  @GetMapping(value = "/generic", produces = {MediaType.APPLICATION_JSON_VALUE})
   public GenericLocomotive getGenericLocomotive() throws TrainSimulatorException {
     return service.getGenericLocomotive();
   }
@@ -56,7 +56,7 @@ public class Controller {
   }
 
   @PutMapping("/control/{control}")
-  public void setControlValue(@PathVariable("control") String control, @RequestParam(name="value") Float value) throws TrainSimulatorException, UnsupportedControlException {
+  public void setControlValue(@PathVariable("control") String control, @RequestParam(name = "value") Float value) throws TrainSimulatorException, UnsupportedControlException {
     ControlData data = new ControlData();
     data.setCurrent(value);
     Event event = new Event(Control.valueOf(control), data);

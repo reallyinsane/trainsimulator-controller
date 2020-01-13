@@ -44,8 +44,8 @@ public class RestConnector implements Connector, InitializingBean {
 
   @Override
   public Locomotive getLocomotive() throws TrainSimulatorException {
-    ResponseEntity<Locomotive> response = template.getForEntity(url+"locomotive", Locomotive.class);
-    if(HttpStatus.OK.equals(response.getStatusCode())) {
+    ResponseEntity<Locomotive> response = template.getForEntity(url + "locomotive", Locomotive.class);
+    if (HttpStatus.OK.equals(response.getStatusCode())) {
       return response.getBody();
     }
     throw new TrainSimulatorException(String.format("Could not access server, http response=%s", response.getStatusCode()));
@@ -53,8 +53,8 @@ public class RestConnector implements Connector, InitializingBean {
 
   @Override
   public ControlData getControlData(Control control) throws TrainSimulatorException, UnsupportedControlException {
-    ResponseEntity<ControlData> response = template.getForEntity(url+"control/"+control.name(), ControlData.class);
-    if(HttpStatus.OK.equals(response.getStatusCode())) {
+    ResponseEntity<ControlData> response = template.getForEntity(url + "control/" + control.name(), ControlData.class);
+    if (HttpStatus.OK.equals(response.getStatusCode())) {
       return response.getBody();
     }
     throw new TrainSimulatorException(String.format("Could not access server, http response=%s", response.getStatusCode()));
@@ -67,8 +67,8 @@ public class RestConnector implements Connector, InitializingBean {
 
   @Override
   public GenericLocomotive getGenericLocomotive() throws TrainSimulatorException {
-    ResponseEntity<GenericLocomotive> response = template.getForEntity(url+"generic", GenericLocomotive.class);
-    if(HttpStatus.OK.equals(response.getStatusCode())) {
+    ResponseEntity<GenericLocomotive> response = template.getForEntity(url + "generic", GenericLocomotive.class);
+    if (HttpStatus.OK.equals(response.getStatusCode())) {
       return response.getBody();
     }
     throw new TrainSimulatorException(String.format("Could not access server, http response=%s", response.getStatusCode()));

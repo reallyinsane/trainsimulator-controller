@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "trainsimulator")
 public class TrainsimulatorConfiguration {
+
   private String host;
   private String port;
 

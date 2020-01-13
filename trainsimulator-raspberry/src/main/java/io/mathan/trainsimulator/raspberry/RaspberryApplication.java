@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @ComponentScan(basePackages = {"io.mathan.trainsimulator.service", "io.mathan.trainsimulator.raspberry", "io.mathan.trainsimulator.client"})
 public class RaspberryApplication {
+
   public static void main(String[] args) {
     SpringApplication.run(RaspberryApplication.class, args);
   }

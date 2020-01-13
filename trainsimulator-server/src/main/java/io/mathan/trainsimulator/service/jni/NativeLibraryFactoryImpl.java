@@ -34,10 +34,6 @@ public class NativeLibraryFactoryImpl implements NativeLibraryFactory, Initializ
 
   private static NativeLibrary instance = null;
 
-  public NativeLibrary getInstance() {
-    return instance;
-  }
-
   public static String getDllLocation() {
     String railworksPath =
         Advapi32Util.registryGetStringValue(
@@ -55,6 +51,10 @@ public class NativeLibraryFactoryImpl implements NativeLibraryFactory, Initializ
 
   public static void setDllLocation(String location) {
     Preferences.userNodeForPackage(Service.class).put("location", location);
+  }
+
+  public NativeLibrary getInstance() {
+    return instance;
   }
 
   @Override

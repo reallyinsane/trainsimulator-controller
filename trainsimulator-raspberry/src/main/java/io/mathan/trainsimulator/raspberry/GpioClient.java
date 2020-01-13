@@ -53,10 +53,6 @@ public class GpioClient implements InitializingBean {
 
   private Connector connector;
 
-  public GpioClient(Connector connector) {
-    this.connector = connector;
-  }
-
   {
     //TODO: move to config
     namePinMapping.put(Control.Pzb85, list(RaspiPin.GPIO_00));
@@ -67,6 +63,19 @@ public class GpioClient implements InitializingBean {
     namePinMapping.put(Control.Pzb1000, list(RaspiPin.GPIO_04));
     namePinMapping.put(Control.Pzb500, list(RaspiPin.GPIO_05));
     namePinMapping.put(Control.Pzb40, list(RaspiPin.GPIO_06));
+  }
+
+  public GpioClient(Connector connector) {
+    this.connector = connector;
+  }
+
+  private static List<Pin> list(Pin pin, Pin... further) {
+    List<Pin> pins = new ArrayList<>();
+    pins.add(pin);
+    if (further != null) {
+      pins.addAll(Arrays.asList(further));
+    }
+    return pins;
   }
 
   @Present
@@ -95,13 +104,12 @@ public class GpioClient implements InitializingBean {
     }
   }
 
-
   @Override
   public void afterPropertiesSet() throws Exception {
     updateLoco(connector.getLocomotive());
     logger.info("startup test started");
     Control[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
-    for(Control control:controls) {
+    for (Control control : controls) {
       logger.info(String.format("%s ON", control.name()));
 
       present(getOnEvent(control));
@@ -153,18 +161,9 @@ public class GpioClient implements InitializingBean {
           logger.info("control {} not available for loco", control);
         }
       }
-      if(!outs.isEmpty()) {
+      if (!outs.isEmpty()) {
         idOutputMap.put(control, outs);
       }
     }
-  }
-
-  private static List<Pin> list(Pin pin, Pin ... further) {
-    List<Pin> pins = new ArrayList<>();
-    pins.add(pin);
-    if(further!=null) {
-        pins.addAll(Arrays.asList(further));
-    }
-    return pins;
   }
 }
