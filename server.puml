@@ -1,0 +1,32 @@
+@startuml
+skinparam sameClassWidth true
+skinparam linetype ortho
+skinparam monochrome true
+
+interface Collector <<interface>>
+class Controller <<@RestController>>
+class Service <<@Scheduled>>
+interface Connector
+class "Bean" as PBean <<@Present>>
+package "" <<Rectangle>> {
+class NativeConnector
+interface NativeLibrary
+interface NativeLibraryFactory
+class NativeLibraryImpl << (N, #FF7700) native>>
+class NativeLibraryFactoryImpl
+}
+
+Service -up-|> Collector
+Collector <- Controller
+Service -right> Presenter
+Presenter o-[norank] PBean
+Controller -[norank]-|>PBean
+Service -down-> Connector
+Connector -down-> NativeConnector
+NativeConnector -left.-> NativeLibraryFactory : <<import>>
+NativeConnector -right.> NativeLibrary : <<import>>
+NativeLibraryFactory -down-|> NativeLibraryFactoryImpl
+NativeLibrary <|-- NativeLibraryImpl
+NativeLibraryFactoryImpl -[norank].->NativeLibraryImpl : <<instantiate>>
+
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+skinparam minClassWidth 150
+skinparam linetype ortho
+skinparam monochrome true
+
+interface Collector <<interface>>
+class Service <<@Scheduled>>
+interface Connector <<interface>>
+
+Service -up-|> Collector
+Service -right> Presenter
+Service -down-> Connector
+
+@enduml

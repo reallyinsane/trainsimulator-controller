@@ -2,7 +2,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6b11f46bd5f34e3ba4c91e96b7ccf99c)](https://www.codacy.com/app/reallyinsane/trainsimulator-controller?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=reallyinsane/trainsimulator-controller&amp;utm_campaign=Badge_Grade)
 <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-apache2-blue.svg"></a>
 
-#Trainsimulator Controller
+# Trainsimulator Controller
 
 This project was created to use custom controls as input or output while playing Trainsimulator. Especially when activating Sifa and PZB direct interaction is needed as soon as this is indicated by the game. But not in all situations (e.g. camera position) the regarding controls are visible.  So the idea was, having custom controls outside of the game.
  
@@ -18,7 +18,7 @@ The API provided by TrainSimulator is available by a Windows DLL only and thus c
 |trainsimularor-core | Domain classed used by client and server modules. |
 |trainsimularor-ft232h | Sample client for a FT232h controller used as USB device on the host. |
 |trainsimularor-parent | Infrastructure module managing dependencies. |
-|trainsimularor-raspberrypi | Sample client for Raspberry using the service over LAN/WLAN.  |
+|trainsimularor-raspberry | Sample client for Raspberry using the service over LAN/WLAN.  |
 |trainsimularor-server | Server component providing REST service on host. |
 
 ## trainsimulator-server
