@@ -21,6 +21,7 @@ import com.sun.jna.platform.win32.WinReg;
 import io.mathan.trainsimulator.service.Service;
 import java.io.File;
 import java.util.prefs.Preferences;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,12 @@ import org.springframework.stereotype.Component;
 public class NativeLibraryFactoryImpl implements NativeLibraryFactory, InitializingBean {
 
   private static NativeLibrary instance = null;
+  private final NativeConfiguration configuration;
+
+  public NativeLibraryFactoryImpl(NativeConfiguration configuration) {
+
+    this.configuration = configuration;
+  }
 
   public static String getDllLocation() {
     String railworksPath =
@@ -59,7 +66,11 @@ public class NativeLibraryFactoryImpl implements NativeLibraryFactory, Initializ
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    instance = Native.loadLibrary(getDllLocation(), NativeLibrary.class);
+    if (StringUtils.isNotBlank(configuration.getDllLocation())) {
+      instance = Native.loadLibrary(configuration.getDllLocation(), NativeLibrary.class);
+    } else {
+      instance = Native.loadLibrary(getDllLocation(), NativeLibrary.class);
+    }
     instance.SetRailDriverConnected(true);
     instance.SetRailSimConnected(true);
 
