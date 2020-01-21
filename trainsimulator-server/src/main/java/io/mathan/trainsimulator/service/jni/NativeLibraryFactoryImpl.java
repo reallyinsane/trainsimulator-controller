@@ -18,10 +18,10 @@ package io.mathan.trainsimulator.service.jni;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
-import io.mathan.trainsimulator.service.Service;
 import java.io.File;
-import java.util.prefs.Preferences;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -33,6 +33,10 @@ import org.springframework.stereotype.Component;
 @Profile("native")
 public class NativeLibraryFactoryImpl implements NativeLibraryFactory, InitializingBean {
 
+  private Logger logger = LoggerFactory.getLogger(getClass());
+
+  public static final String REGISTRY_KEY = "SOFTWARE\\WOW6432Node\\railsimulator.com\\railworks";
+  public static final String REGISTRY_VALUE = "install_path";
   private static NativeLibrary instance = null;
   private final NativeConfiguration configuration;
 
@@ -41,23 +45,22 @@ public class NativeLibraryFactoryImpl implements NativeLibraryFactory, Initializ
     this.configuration = configuration;
   }
 
-  public static String getDllLocation() {
-    String railworksPath =
-        Advapi32Util.registryGetStringValue(
-            WinReg.HKEY_LOCAL_MACHINE,
-            "SOFTWARE\\WOW6432Node\\railsimulator.com\\railworks",
-            "install_path");
-    if (!railworksPath.trim().isEmpty()) {
-      railworksPath += "\\plugins\\" + (System.getProperty("os.arch").contains("64") ? "RailDriver64.dll" : "RailDriver.dll");
-      if (new File(railworksPath).exists()) {
-        return railworksPath;
+  public static String getDllLocation() throws Exception {
+    if (Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE, REGISTRY_KEY, REGISTRY_VALUE)) {
+      String railworksPath =
+          Advapi32Util.registryGetStringValue(
+              WinReg.HKEY_LOCAL_MACHINE,
+              REGISTRY_KEY,
+              REGISTRY_VALUE);
+      if (!railworksPath.trim().isEmpty()) {
+        railworksPath += "\\plugins\\" + (System.getProperty("os.arch").contains("64") ? "RailDriver64.dll" : "RailDriver.dll");
+        if (new File(railworksPath).exists()) {
+          return railworksPath;
+        }
       }
     }
-    return Preferences.userNodeForPackage(Service.class).get("location", "");
-  }
-
-  public static void setDllLocation(String location) {
-    Preferences.userNodeForPackage(Service.class).put("location", location);
+    throw new Exception(
+        "Registry key for installation path of TrainSimulator not found. Add property native.ddlLocation with absolute path of TrainSimulator installation folder in application.properties.");
   }
 
   public NativeLibrary getInstance() {
@@ -66,13 +69,15 @@ public class NativeLibraryFactoryImpl implements NativeLibraryFactory, Initializ
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    String ddlLocation;
     if (StringUtils.isNotBlank(configuration.getDllLocation())) {
-      instance = Native.loadLibrary(configuration.getDllLocation(), NativeLibrary.class);
+      ddlLocation = configuration.getDllLocation();
     } else {
-      instance = Native.loadLibrary(getDllLocation(), NativeLibrary.class);
+      ddlLocation = getDllLocation();
     }
+    instance = Native.loadLibrary(ddlLocation, NativeLibrary.class);
     instance.SetRailDriverConnected(true);
     instance.SetRailSimConnected(true);
-
+    logger.info("DLL {} loaded successfully", ddlLocation);
   }
 }
