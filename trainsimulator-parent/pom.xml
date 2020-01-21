@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
   <groupId>io.mathan.trainsimulator</groupId>
   <artifactId>trainsimulator-parent</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1.0</version>
 
   <properties>
     <pi4j.version>1.2</pi4j.version>

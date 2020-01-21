@@ -7,7 +7,7 @@
   <groupId>io.mathan.trainsimulator</groupId>
   <artifactId>trainsimulator-aggregator</artifactId>
   <packaging>pom</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1.0</version>
   <modules>
     <module>trainsimulator-core</module>
     <module>trainsimulator-parent</module>

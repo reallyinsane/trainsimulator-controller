@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.mathan.trainsimulator</groupId>
     <artifactId>trainsimulator-parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1.0</version>
     <relativePath>../trainsimulator-parent</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
 
   <groupId>io.mathan.trainsimulator</groupId>
   <artifactId>trainsimulator-server</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1.0</version>
 
   <properties>
     <start-class>io.mathan.trainsimulator.service.Application</start-class>
@@ -28,25 +28,72 @@
   </dependencies>
   <build>
     <plugins>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-jar-plugin</artifactId>
-      <executions>
-        <execution>
-          <goals>
-            <goal>jar</goal>
-          </goals>
-          <phase>package</phase>
-          <configuration>
-            <!--to be imported on other projects-->
-            <classifier>import</classifier>
-          </configuration>
-        </execution>
-      </executions>
-    </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <!--to be imported on other projects-->
+              <classifier>import</classifier>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+        <artifactId>launch4j-maven-plugin</artifactId>
+        <version>1.7.25</version>
+        <executions>
+          <execution>
+            <id>build-windows-executable</id>
+            <phase>package</phase>
+            <goals>
+              <goal>launch4j</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <headerType>console</headerType>
+          <outfile>${project.build.directory}/${project.artifactId}-${project.version}.exe</outfile>
+          <jar>${project.build.directory}/${project.artifactId}-${project.version}.jar</jar>
+          <errTitle>${project.artifactId}</errTitle>
+          <classPath>
+            <mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
+            <addDependencies>false</addDependencies>
+          </classPath>
+          <icon>app.ico</icon>
+          <jre>
+            <minVersion>1.8.0</minVersion>
+          </jre>
+          <versionInfo>
+            <fileVersion>${project.version}.0</fileVersion>
+            <txtFileVersion>${project.version}.0</txtFileVersion>
+            <fileDescription>trainsimulator-controller REST server</fileDescription>
+            <copyright>Copyright 2019 Matthias Hanisch (reallyinsane)</copyright>
+            <productVersion>${project.version}.0</productVersion>
+            <txtProductVersion>${project.version}.0</txtProductVersion>
+            <productName>${project.artifactId}</productName>
+            <internalName>${project.artifactId}</internalName>
+            <originalFilename>${project.artifactId}-${project.version}.exe</originalFilename>
+          </versionInfo>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/zip.xml</descriptor>
+          </descriptors>
+        </configuration>
       </plugin>
     </plugins>
   </build>
