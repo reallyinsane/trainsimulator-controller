@@ -143,3 +143,5 @@ Requirements:
 - Software:
     - [D2XX Drivers](https://www.ftdichip.com/Drivers/D2XX.htm)
  
+<img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/ft232h_front.jpg" width="200px">
+<img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/ft232h_back.jpg" width="200px">
