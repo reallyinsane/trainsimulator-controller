@@ -51,11 +51,24 @@ public class NativeConnector implements InitializingBean, Connector {
 
   private static final String DELIMITER_LOCO = ".:.";
   private static final String DELIMITER_CONTROLLER = "::";
+  private static final Map<Control, Integer> commonControlsMap = new HashMap<>();
   private final Map<Control, Integer> controlsMap = new HashMap<>();
   private final Map<Control, VirtualControl> virtualControlsMap = new HashMap<>();
   private Logger logger = LoggerFactory.getLogger(NativeConnector.class);
   private NativeLibraryFactory factory;
   private NativeLibrary nativeLibrary;
+
+  static {
+    commonControlsMap.put(Control.CommonCurrentLatitude, 400);
+    commonControlsMap.put(Control.CommonCurrentLongitude, 401);
+    commonControlsMap.put(Control.CommonFuelLevel, 402);
+    commonControlsMap.put(Control.CommonTunnel, 403);
+    commonControlsMap.put(Control.CommonGradient, 404);
+    commonControlsMap.put(Control.CommonHeading, 405);
+    commonControlsMap.put(Control.CommonCurrentTimeHour, 406);
+    commonControlsMap.put(Control.CommonCurrentTimeMinute, 407);
+    commonControlsMap.put(Control.CommonCurrentTimeSecond, 408);
+  }
 
   public NativeConnector(NativeLibraryFactory factory) {
     this.factory = factory;
@@ -78,39 +91,42 @@ public class NativeConnector implements InitializingBean, Connector {
       locomotive
           .getControls()
           .addAll(getVirtualControls(defaultMapping, locoMapping));
+      locomotive
+          .getControls()
+          .addAll(commonControlsMap.keySet());
+      logger.info("ENGINE {} {} {}", locomotive.getProvider(), locomotive.getProduct(), locomotive.getEngine());
     }
     return locomotive;
   }
 
   @Override
-  public ControlData getControlData(Control control) throws TrainSimulatorException, UnsupportedControlException {
-    synchronized (controlsMap) {
-      Integer id = controlsMap.get(control);
-      if (id != null) {
-        ControlData value = new ControlData();
-        value.setCurrent(this.nativeLibrary.GetControllerValue(id, 0));
-        value.setMinimum(this.nativeLibrary.GetControllerValue(id, 1));
-        value.setMaximum(this.nativeLibrary.GetControllerValue(id, 2));
-        return value;
-      } else {
-        synchronized (virtualControlsMap) {
-          VirtualControl virtualControl = virtualControlsMap.get(control);
-          if (virtualControl != null) {
-            ControlData value = new ControlData();
-            value.setMinimum(0f);
-            value.setMaximum(1f);
-            Float current = this.nativeLibrary.GetControllerValue(virtualControl.getId(), 0);
-            if (virtualControl.getValue().equals(current)) {
-              value.setCurrent(1f);
-            } else {
-              value.setCurrent(0f);
-            }
-            return value;
-          }
-        }
-      }
-      return null;
+  public synchronized ControlData getControlData(Control control) throws TrainSimulatorException, UnsupportedControlException {
+    Integer id = commonControlsMap.get(control);
+    if (id == null) {
+      id = controlsMap.get(control);
     }
+    if (id != null) {
+      ControlData value = new ControlData();
+      value.setCurrent(this.nativeLibrary.GetControllerValue(id, 0));
+      value.setMinimum(this.nativeLibrary.GetControllerValue(id, 1));
+      value.setMaximum(this.nativeLibrary.GetControllerValue(id, 2));
+      return value;
+    } else {
+      VirtualControl virtualControl = virtualControlsMap.get(control);
+      if (virtualControl != null) {
+        ControlData value = new ControlData();
+        value.setMinimum(0f);
+        value.setMaximum(1f);
+        Float current = this.nativeLibrary.GetControllerValue(virtualControl.getId(), 0);
+        if (virtualControl.getValue().equals(current)) {
+          value.setCurrent(1f);
+        } else {
+          value.setCurrent(0f);
+        }
+        return value;
+      }
+    }
+    return null;
   }
 
   @Override

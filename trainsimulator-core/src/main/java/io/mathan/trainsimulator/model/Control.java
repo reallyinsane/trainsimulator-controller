@@ -30,7 +30,16 @@ public enum Control {
   CmdSifa("VigilReset"),
   CmdPzbWachsam("Cmd_Wachsam"),
   CmdPzbFrei("Cmd_Free"),
-  CmdPzbBefehl("Cmd_40");
+  CmdPzbBefehl("Cmd_40"),
+  CommonCurrentLatitude("CommonCurrentLatitude"),
+  CommonCurrentLongitude("CommonCurrentLongitude"),
+  CommonFuelLevel("CommonFuelLevel"),
+  CommonTunnel("CommonTunnel"),
+  CommonGradient("CommonGradient"),
+  CommonHeading("CommonHeading"),
+  CommonCurrentTimeHour("CommonCurrentTimeHour"),
+  CommonCurrentTimeMinute("CommonCurrentTimeMinute"),
+  CommonCurrentTimeSecond("CommonCurrentTimeSecond");
 
   private final String value;
 
