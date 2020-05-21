@@ -15,7 +15,6 @@
 
 package io.mathan.trainsimulator.service;
 
-import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
@@ -48,7 +47,7 @@ public class Service implements Collector, BeanPostProcessor {
   private final Connector connector;
   private Logger logger = LoggerFactory.getLogger(Service.class);
   private Locomotive locomotive;
-  private Map<Control, ControlData> data = new HashMap<>();
+  private Map<String, ControlData> data = new HashMap<>();
   private List<Event> events = new ArrayList<>();
   private List<LocoUpdateBeanMethod> locoUpdateBeanMethods = new ArrayList<>();
 
@@ -76,7 +75,7 @@ public class Service implements Collector, BeanPostProcessor {
       this.locomotive = connector.getLocomotive();
     }
     sendToConnector();
-    Map<Control, ControlData> updates = getUpdatesFromConnector();
+    Map<String, ControlData> updates = getUpdatesFromConnector();
     this.data.putAll(updates);
     this.presenter.present(updates);
   }
@@ -100,9 +99,9 @@ public class Service implements Collector, BeanPostProcessor {
     this.events.clear();
   }
 
-  private Map<Control, ControlData> getUpdatesFromConnector() throws TrainSimulatorException, UnsupportedControlException {
-    Map<Control, ControlData> dataToUpdate = new HashMap<>();
-    for (Control control : locomotive.getControls()) {
+  private Map<String, ControlData> getUpdatesFromConnector() throws TrainSimulatorException, UnsupportedControlException {
+    Map<String, ControlData> dataToUpdate = new HashMap<>();
+    for (String control : locomotive.getControls()) {
       ControlData oldData = data.get(control);
       ControlData newData = connector.getControlData(control);
       if (!Objects.equals(oldData, newData)) {

@@ -15,21 +15,20 @@
 
 package io.mathan.trainsimulator.service;
 
-import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 
 public class Event {
 
 
-  private final Control control;
+  private final String control;
   private final ControlData controlData;
 
-  public Event(Control control, ControlData controlData) {
+  public Event(String control, ControlData controlData) {
     this.control = control;
     this.controlData = controlData;
   }
 
-  public Control getControl() {
+  public String getControl() {
     return this.control;
   }
 

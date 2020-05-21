@@ -37,7 +37,7 @@ public class PzbPresenter implements InitializingBean {
 
   private Logger logger = LoggerFactory.getLogger(PzbPresenter.class);
 
-  private Map<Control, Pin> map = new HashMap<>();
+  private Map<String, Pin> map = new HashMap<>();
 
   private PzbConfiguration configuration;
   private Ft232h ft232h;
@@ -92,27 +92,27 @@ public class PzbPresenter implements InitializingBean {
   public void afterPropertiesSet() throws Exception {
     ft232h = Ft232h.getInstance();
     logger.info("startup test started");
-    Control[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
-    for (Control control : controls) {
-      logger.info(String.format("%s ON", control.name()));
+    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
+    for (String control : controls) {
+      logger.info(String.format("%s ON", control));
       present(getOnEvent(control));
       Thread.sleep(500);
-      logger.info(String.format("%s OFF", control.name()));
+      logger.info(String.format("%s OFF", control));
       present(getOffEvent(control));
       Thread.sleep(500);
     }
     logger.info("startup test finished");
   }
 
-  private Event getOnEvent(Control control) {
+  private Event getOnEvent(String control) {
     return getEvent(control, 1.0f);
   }
 
-  private Event getOffEvent(Control control) {
+  private Event getOffEvent(String control) {
     return getEvent(control, 0.0f);
   }
 
-  private Event getEvent(Control control, float value) {
+  private Event getEvent(String control, float value) {
     ControlData data = new ControlData();
     data.setCurrent(value);
     return new Event(control, data);

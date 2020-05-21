@@ -15,7 +15,6 @@
 
 package io.mathan.trainsimulator.service;
 
-import io.mathan.trainsimulator.model.Control;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,5 +32,5 @@ public @interface Present {
   /**
    * Controls to receive events for can be specified optional. By default events of all controls will be received.
    */
-  Control[] controls() default {};
+  String[] controls() default {};
 }

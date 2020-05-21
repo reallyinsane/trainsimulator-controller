@@ -15,48 +15,30 @@
 
 package io.mathan.trainsimulator.model;
 
-public enum Control {
-  SifaEnabled("VigilEnable"),
-  PzbEnabled("PZBEnable"),
-  Pzb55("PZB_55"),
-  Pzb70("PZB_70"),
-  Pzb85("PZB_85"),
-  Pzb40("PZB_40"),
-  Pzb500("PZB_500"),
-  Pzb1000("PZB_1000"),
-  SifaLight("VigilLight"),
-  SifaAlarm("VigilAlarm"),
-  PzbWarning("PzbWarning"),
-  CmdSifa("VigilReset"),
-  CmdPzbWachsam("Cmd_Wachsam"),
-  CmdPzbFrei("Cmd_Free"),
-  CmdPzbBefehl("Cmd_40"),
-  CommonCurrentLatitude("CommonCurrentLatitude"),
-  CommonCurrentLongitude("CommonCurrentLongitude"),
-  CommonFuelLevel("CommonFuelLevel"),
-  CommonTunnel("CommonTunnel"),
-  CommonGradient("CommonGradient"),
-  CommonHeading("CommonHeading"),
-  CommonCurrentTimeHour("CommonCurrentTimeHour"),
-  CommonCurrentTimeMinute("CommonCurrentTimeMinute"),
-  CommonCurrentTimeSecond("CommonCurrentTimeSecond");
+public interface Control {
 
-  private final String value;
-
-  Control(String value) {
-    this.value = value;
-  }
-
-  public static Control fromString(String value) {
-    for (Control control : Control.values()) {
-      if (control.value.equals(value)) {
-        return control;
-      }
-    }
-    return null;
-  }
-
-  public String getValue() {
-    return this.value;
-  }
+  String SifaEnabled = "VigilEnable";
+  String PzbEnabled = "PZBEnable";
+  String Pzb55 = "PZB_55";
+  String Pzb70 = "PZB_70";
+  String Pzb85 = "PZB_85";
+  String Pzb40 = "PZB_40";
+  String Pzb500 = "PZB_500";
+  String Pzb1000 = "PZB_1000";
+  String SifaLight = "VigilLight";
+  String SifaAlarm = "VigilAlarm";
+  String PzbWarning = "PzbWarning";
+  String CmdSifa = "VigilReset";
+  String CmdPzbWachsam = "Cmd_Wachsam";
+  String CmdPzbFrei = "Cmd_Free";
+  String CmdPzbBefehl = "Cmd_40";
+  String CommonCurrentLatitude = "CommonCurrentLatitude";
+  String CommonCurrentLongitude = "CommonCurrentLongitude";
+  String CommonFuelLevel = "CommonFuelLevel";
+  String CommonTunnel = "CommonTunnel";
+  String CommonGradient = "CommonGradient";
+  String CommonHeading = "CommonHeading";
+  String CommonCurrentTimeHour = "CommonCurrentTimeHour";
+  String CommonCurrentTimeMinute = "CommonCurrentTimeMinute";
+  String CommonCurrentTimeSecond = "CommonCurrentTimeSecond";
 }

@@ -51,9 +51,9 @@ public class NativeConnector implements InitializingBean, Connector {
 
   private static final String DELIMITER_LOCO = ".:.";
   private static final String DELIMITER_CONTROLLER = "::";
-  private static final Map<Control, Integer> commonControlsMap = new HashMap<>();
-  private final Map<Control, Integer> controlsMap = new HashMap<>();
-  private final Map<Control, VirtualControl> virtualControlsMap = new HashMap<>();
+  private static final Map<String, Integer> commonControlsMap = new HashMap<>();
+  private final Map<String, Integer> controlsMap = new HashMap<>();
+  private final Map<String, VirtualControl> virtualControlsMap = new HashMap<>();
   private Logger logger = LoggerFactory.getLogger(NativeConnector.class);
   private NativeLibraryFactory factory;
   private NativeLibrary nativeLibrary;
@@ -100,7 +100,7 @@ public class NativeConnector implements InitializingBean, Connector {
   }
 
   @Override
-  public synchronized ControlData getControlData(Control control) throws TrainSimulatorException, UnsupportedControlException {
+  public synchronized ControlData getControlData(String control) throws TrainSimulatorException, UnsupportedControlException {
     Integer id = commonControlsMap.get(control);
     if (id == null) {
       id = controlsMap.get(control);
@@ -130,7 +130,7 @@ public class NativeConnector implements InitializingBean, Connector {
   }
 
   @Override
-  public void setControlData(Control control, ControlData data) throws TrainSimulatorException, UnsupportedControlException {
+  public void setControlData(String control, ControlData data) throws TrainSimulatorException, UnsupportedControlException {
     synchronized (controlsMap) {
       Integer id = controlsMap.get(control);
       if (id != null) {
@@ -186,8 +186,8 @@ public class NativeConnector implements InitializingBean, Connector {
     return list;
   }
 
-  private List<Control> getVirtualControls(Mapping defaultMapping, Mapping locoMapping) {
-    List<Control> list = new ArrayList<>();
+  private List<String> getVirtualControls(Mapping defaultMapping, Mapping locoMapping) {
+    List<String> list = new ArrayList<>();
     synchronized (virtualControlsMap) {
       virtualControlsMap.clear();
       String result = this.nativeLibrary.GetControllerList();
@@ -200,7 +200,7 @@ public class NativeConnector implements InitializingBean, Connector {
               defaultMapping.getVirtualMapping().get(controlName);
           if (virtualControls != null) {
             for (VirtualMapping virtualControl : virtualControls) {
-              Control control = Control.fromString(virtualControl.getName());
+              String control = virtualControl.getName();
               if (control != null) {
                 list.add(control);
                 VirtualControl vc = new VirtualControl(index, virtualControl.getValue());
@@ -215,17 +215,17 @@ public class NativeConnector implements InitializingBean, Connector {
     return list;
   }
 
-  private List<Control> getControls(Mapping defaultMapping, Mapping locoMapping) {
+  private List<String> getControls(Mapping defaultMapping, Mapping locoMapping) {
     synchronized (controlsMap) {
       controlsMap.clear();
-      List<Control> list = new ArrayList<>();
+      List<String> list = new ArrayList<>();
       String result = this.nativeLibrary.GetControllerList();
       if (result != null) {
         StringTokenizer tokenizer = new StringTokenizer(result, DELIMITER_CONTROLLER);
         int index = 0;
         while (tokenizer.hasMoreTokens()) {
           String controlName = tokenizer.nextToken();
-          Control control = getControlForName(controlName, defaultMapping, locoMapping);
+          String control = getControlForName(controlName, defaultMapping, locoMapping);
           if (control != null) {
             list.add(control);
             controlsMap.put(control, index);
@@ -237,27 +237,17 @@ public class NativeConnector implements InitializingBean, Connector {
     }
   }
 
-  private Control getControlForName(
+  private String getControlForName(
       String controlName, Mapping defaultMapping, Mapping locoMapping) {
-    Control control = Control.fromString(controlName);
-    if (control != null) {
-      return control;
-    }
     String locoControlName = locoMapping.getSimpleMapping().get(controlName);
     if (locoControlName != null) {
-      control = Control.fromString(locoControlName);
-      if (control != null) {
-        return control;
-      }
+      return locoControlName;
     }
     String defaultControlName = defaultMapping.getSimpleMapping().get(controlName);
     if (defaultControlName != null) {
-      control = Control.fromString(defaultControlName);
-      if (control != null) {
-        return control;
-      }
+      return defaultControlName;
     }
-    return null;
+    return controlName;
   }
 
   private Mapping loadMapping(InputStream in) {

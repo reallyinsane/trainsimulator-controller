@@ -45,8 +45,8 @@ public class GpioClient implements InitializingBean {
   private Logger logger = LoggerFactory.getLogger(GpioClient.class);
 
 
-  private Map<Control, List<Pin>> namePinMapping = new HashMap<Control, List<Pin>>();
-  private Map<Control, List<GpioPinDigitalOutput>> idOutputMap = new HashMap<>();
+  private Map<String, List<Pin>> namePinMapping = new HashMap<>();
+  private Map<String, List<GpioPinDigitalOutput>> idOutputMap = new HashMap<>();
   private Locomotive locomotive;
   private String loco;
   private GpioController gpio = null;
@@ -108,13 +108,13 @@ public class GpioClient implements InitializingBean {
   public void afterPropertiesSet() throws Exception {
     updateLoco(connector.getLocomotive());
     logger.info("startup test started");
-    Control[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
-    for (Control control : controls) {
-      logger.info(String.format("%s ON", control.name()));
+    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
+    for (String control : controls) {
+      logger.info(String.format("%s ON", control));
 
       present(getOnEvent(control));
       Thread.sleep(500);
-      logger.info(String.format("%s OFF", control.name()));
+      logger.info(String.format("%s OFF", control));
       present(getOffEvent(control));
       Thread.sleep(500);
     }
@@ -125,15 +125,15 @@ public class GpioClient implements InitializingBean {
     return locomotive.getEngine();
   }
 
-  private Event getOnEvent(Control control) {
+  private Event getOnEvent(String control) {
     return getEvent(control, 1.0f);
   }
 
-  private Event getOffEvent(Control control) {
+  private Event getOffEvent(String control) {
     return getEvent(control, 0.0f);
   }
 
-  private Event getEvent(Control control, float value) {
+  private Event getEvent(String control, float value) {
     ControlData data = new ControlData();
     data.setCurrent(value);
     return new Event(control, data);
@@ -149,7 +149,7 @@ public class GpioClient implements InitializingBean {
       gpio.shutdown();
     }
     gpio = GpioFactory.getInstance();
-    for (Control control : namePinMapping.keySet()) {
+    for (String control : namePinMapping.keySet()) {
       List<Pin> pins = namePinMapping.get(control);
       List<GpioPinDigitalOutput> outs = new ArrayList<>();
       for (Pin pin : pins) {

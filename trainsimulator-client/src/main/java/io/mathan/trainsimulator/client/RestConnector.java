@@ -14,7 +14,6 @@
  */
 package io.mathan.trainsimulator.client;
 
-import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
@@ -52,8 +51,8 @@ public class RestConnector implements Connector, InitializingBean {
   }
 
   @Override
-  public ControlData getControlData(Control control) throws TrainSimulatorException, UnsupportedControlException {
-    ResponseEntity<ControlData> response = template.getForEntity(url + "control/" + control.name(), ControlData.class);
+  public ControlData getControlData(String control) throws TrainSimulatorException, UnsupportedControlException {
+    ResponseEntity<ControlData> response = template.getForEntity(url + "control/" + control, ControlData.class);
     if (HttpStatus.OK.equals(response.getStatusCode())) {
       return response.getBody();
     }
@@ -61,7 +60,7 @@ public class RestConnector implements Connector, InitializingBean {
   }
 
   @Override
-  public void setControlData(Control control, ControlData data) throws TrainSimulatorException, UnsupportedControlException {
+  public void setControlData(String control, ControlData data) throws TrainSimulatorException, UnsupportedControlException {
     //TODO: implement
   }
 
