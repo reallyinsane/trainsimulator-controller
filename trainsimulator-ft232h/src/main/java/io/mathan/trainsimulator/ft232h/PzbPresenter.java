@@ -18,10 +18,8 @@ import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import io.mathan.trainsimulator.service.Event;
 import io.mathan.trainsimulator.service.Present;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.PreDestroy;
-import org.apache.commons.lang3.StringUtils;
+import net.sf.yad2xx.FTDIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -37,37 +35,16 @@ public class PzbPresenter implements InitializingBean {
 
   private Logger logger = LoggerFactory.getLogger(PzbPresenter.class);
 
-  private Map<String, Pin> map = new HashMap<>();
+  private String time;
+  private float hour;
+  private float minute;
+  private int hundret;
+  private int ten;
+  private int one;
 
-  private PzbConfiguration configuration;
   private Ft232h ft232h;
 
-  public PzbPresenter(PzbConfiguration configuration) {
-    this.configuration = configuration;
-    if (StringUtils.isNotBlank(configuration.getPzb55())) {
-      map.put(Control.Pzb55, Pin.valueOf(configuration.getPzb55()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb70())) {
-      map.put(Control.Pzb70, Pin.valueOf(configuration.getPzb70()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb85())) {
-      map.put(Control.Pzb85, Pin.valueOf(configuration.getPzb85()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb40())) {
-      map.put(Control.Pzb40, Pin.valueOf(configuration.getPzb40()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb500())) {
-      map.put(Control.Pzb500, Pin.valueOf(configuration.getPzb500()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb1000())) {
-      map.put(Control.Pzb1000, Pin.valueOf(configuration.getPzb1000()));
-    }
-    if (StringUtils.isNotBlank(configuration.getSifaLight())) {
-      map.put(Control.SifaLight, Pin.valueOf(configuration.getSifaLight()));
-    }
-    if (StringUtils.isNotBlank(configuration.getSifaWarn())) {
-      map.put(Control.SifaAlarm, Pin.valueOf(configuration.getSifaWarn()));
-    }
+  public PzbPresenter() {
   }
 
   /**
@@ -75,13 +52,51 @@ public class PzbPresenter implements InitializingBean {
    */
   @Present
   public void present(Event event) {
-    if (map.containsKey(event.getControl())) {
-      if (Float.valueOf(1.0F).equals(event.getData().getCurrent())) {
-        ft232h.on(map.get(event.getControl()));
-      } else {
-        ft232h.off(map.get(event.getControl()));
+    try {
+      boolean controlSet = Float.valueOf(1.0F).equals(event.getData().getCurrent());
+      if (Control.Pzb55.equals(event.getControl())) {
+        ft232h.setPzb55(controlSet);
+      } else if (Control.Pzb70.equals(event.getControl())) {
+        ft232h.setPzb70(controlSet);
+      } else if (Control.Pzb85.equals(event.getControl())) {
+        ft232h.setPzb85(controlSet);
+      } else if (Control.Pzb40.equals(event.getControl())) {
+        ft232h.setPzb40(controlSet);
+      } else if (Control.Pzb500.equals(event.getControl())) {
+        ft232h.setPzb500(controlSet);
+      } else if (Control.Pzb1000.equals(event.getControl())) {
+        ft232h.setPzb1000(controlSet);
+      } else if (Control.SifaLight.equals(event.getControl())) {
+        ft232h.setSifaLight(controlSet);
+      } else if (Control.SifaAlarm.equals(event.getControl())) {
+        ft232h.setSifaBuzzer(controlSet);
+      } else if (Control.CommonCurrentTimeHour.equals(event.getControl())) {
+        hour = event.getData().getCurrent();
+        time = String.format("%02d:%02d", (int) hour, (int) minute);
+        ft232h.setBlueTime(time);
+      } else if (Control.CommonCurrentTimeMinute.equals(event.getControl())) {
+        minute = event.getData().getCurrent();
+        time = String.format("%02d:%02d", (int) hour, (int) minute);
+        ft232h.setBlueTime(time);
+      } else if ("SpeedometerKPH".equals(event.getControl())) {
+        ft232h.setWhite(event.getData().getCurrent());
+      } else if ("LZB_Buzzer".equals(event.getControl())) {
+//        ft232h.setLZBBuzzer(controlSet);
+      } else if ("TargetSpeed100".equals(event.getControl())) {
+        hundret = event.getData().getCurrent().intValue();
+        ft232h.setRed(1f * (hundret * 100 + ten * 10 + one));
+      } else if ("TargetSpeed10".equals(event.getControl())) {
+        ten = event.getData().getCurrent().intValue();
+        ft232h.setRed(1f * (hundret * 100 + ten * 10 + one));
+      } else if ("TargetSpeed1".equals(event.getControl())) {
+        one = event.getData().getCurrent().intValue();
+        ft232h.setRed(1f * (hundret * 100 + ten * 10 + one));
+      } else if ("RawTargetDistance".equals(event.getControl())) {
+        ft232h.setBar(event.getData().getCurrent() / 4000);
       }
-      ft232h.execute();
+      ft232h.delay(10);
+    } catch (FTDIException e) {
+      e.printStackTrace();
     }
   }
 
@@ -91,17 +106,17 @@ public class PzbPresenter implements InitializingBean {
   @Override
   public void afterPropertiesSet() throws Exception {
     ft232h = Ft232h.getInstance();
-    logger.info("startup test started");
-    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
-    for (String control : controls) {
-      logger.info(String.format("%s ON", control));
-      present(getOnEvent(control));
-      Thread.sleep(500);
-      logger.info(String.format("%s OFF", control));
-      present(getOffEvent(control));
-      Thread.sleep(500);
-    }
-    logger.info("startup test finished");
+//    logger.info("startup test started");
+//    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
+//    for (String control : controls) {
+//      logger.info(String.format("%s ON", control));
+//      present(getOnEvent(control));
+//      Thread.sleep(500);
+//      logger.info(String.format("%s OFF", control));
+//      present(getOffEvent(control));
+//      Thread.sleep(500);
+//    }
+//    logger.info("startup test finished");
   }
 
   private Event getOnEvent(String control) {

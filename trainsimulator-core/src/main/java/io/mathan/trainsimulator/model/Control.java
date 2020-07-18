@@ -29,9 +29,9 @@ public interface Control {
   String SifaAlarm = "VigilAlarm";
   String PzbWarning = "PzbWarning";
   String CmdSifa = "VigilReset";
-  String CmdPzbWachsam = "Cmd_Wachsam";
+  String CmdPzbWachsam = "Cmd_Wachsam"; //CMD_Acknowledge
   String CmdPzbFrei = "Cmd_Free";
-  String CmdPzbBefehl = "Cmd_40";
+  String CmdPzbBefehl = "Cmd_40"; // CMD_Override
   String CommonCurrentLatitude = "CommonCurrentLatitude";
   String CommonCurrentLongitude = "CommonCurrentLongitude";
   String CommonFuelLevel = "CommonFuelLevel";
@@ -41,4 +41,41 @@ public interface Control {
   String CommonCurrentTimeHour = "CommonCurrentTimeHour";
   String CommonCurrentTimeMinute = "CommonCurrentTimeMinute";
   String CommonCurrentTimeSecond = "CommonCurrentTimeSecond";
+
+  String SpeedometerKPH = "SpeedometerKPH";
+  String SpeedometerMPH = "SpeedometerMPH"; // for US/UK
+  String AWS = "AWS"; // similar to Sifa in England
+  String AFBSpeed = "AFB_Speed"; //AFBTargetSpeed
+  String LZBSpeed = "LZB_Speed";
+  String LZBBuzzer = "LZB_Buzzer";
+
+  String RawTargetDistance = "RawTargetDistance"; // TargetDistance
+  String RawSpeedTarget = "RawSpeedTarget";
+  /*
+  C:\Users\Matthias\ts_temp\DTG\RhineValley1\RailVehicles\Electric\ICE3\Default\Engine\ICE3_driving_A.xml (79 hits)
+	Line 1010: 							<ControlName d:type="cDeltaString">TargetSpeed1</ControlName>
+	Line 1057: 							<ControlName d:type="cDeltaString">TargetSpeed10</ControlName>
+	Line 1185: 							<ControlName d:type="cDeltaString">TargetSpeed100</ControlName>
+	Line 1259: 							<ControlName d:type="cDeltaString">AFBSpeed1</ControlName>
+	Line 1312: 							<ControlName d:type="cDeltaString">AFBSpeed10</ControlName>
+	Line 1428: 							<ControlName d:type="cDeltaString">AFBSpeed100</ControlName>
+ C:\Users\Matthias\ts_temp\DTG\RhineValley1\RailVehicles\Electric\BR189\Engine\BR189_Engine_nd.xml (97 hits)
+	Line 1286: 							<ControlName d:type="cDeltaString">TargetSpeed100</ControlName>
+	Line 1360: 							<ControlName d:type="cDeltaString">TargetSpeed10</ControlName>
+	Line 1488: 							<ControlName d:type="cDeltaString">TargetSpeed1</ControlName>
+  C:\Users\Matthias\ts_temp\DTG\MunichRosenheim\RailVehicles\Electric\BR101\Default\Engine\br101_nd.xml (78 hits)
+	Line 587: 							<ControlName d:type="cDeltaString">LZB_SignalSpeed</ControlName>
+	Line 598: 							<ControlName d:type="cDeltaString">LZB_Speed</ControlName>
+  BR155_Engine
+	Line 3396: 							<ControlName d:type="cDeltaString">LZB_Distance</ControlName>
+	Line 3432: 							<ControlName d:type="cDeltaString">LZB_DistanceK</ControlName>
+	Line 3522: 							<ControlName d:type="cDeltaString">LZB_DistanceH</ControlName>
+	Line 3648: 							<ControlName d:type="cDeltaString">LZB_DistanceBar</ControlName>  *
+
+	Talent2
+	Line 6622: 							<ControlName d:type="cDeltaString">Destination</ControlName>
+	Line 3785: 							<ControlName d:type="cDeltaString">TargetDistance</ControlName>
+	Line 3807: 							<ControlName d:type="cDeltaString">TargetDistanceBar</ControlName>
+
+  * */
 }

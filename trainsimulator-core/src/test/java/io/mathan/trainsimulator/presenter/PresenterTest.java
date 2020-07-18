@@ -68,7 +68,7 @@ public class PresenterTest {
 
   public static class PresentBean {
 
-    @Present(controls = {Control.Pzb55})
+    @Present({Control.Pzb55})
     public void present(Event event) {
       calls++;
     }

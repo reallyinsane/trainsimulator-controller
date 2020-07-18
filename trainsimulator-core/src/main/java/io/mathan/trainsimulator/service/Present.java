@@ -32,5 +32,5 @@ public @interface Present {
   /**
    * Controls to receive events for can be specified optional. By default events of all controls will be received.
    */
-  String[] controls() default {};
+  String[] value() default {};
 }

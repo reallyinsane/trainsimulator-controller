@@ -86,10 +86,10 @@ public class Presenter implements BeanPostProcessor {
         if (method.getParameterCount() != 1 || !Event.class.equals(method.getParameterTypes()[0])) {
           throw new FatalBeanException(String.format("Methods annotated with @Present need a parameter of type %s", Event.class.getName()));
         }
-        for (String control : annotation.controls()) {
+        for (String control : annotation.value()) {
           addMethod(control, bean, method);
         }
-        if (annotation.controls().length == 0) {
+        if (annotation.value().length == 0) {
           PresentAnnotatedBeanMethod listener = new PresentAnnotatedBeanMethod();
           listener.bean = bean;
           listener.method = method;
