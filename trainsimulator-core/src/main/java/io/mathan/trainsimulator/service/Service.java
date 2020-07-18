@@ -41,6 +41,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Service implements Collector, BeanPostProcessor {
 
+  private static final int INITIAL_DELAY = 5000;
   private static final int RATE_EXECUTION = 100;
   private static final int RATE_LOCOMOTIVE = 20000;
   private final Presenter presenter;
@@ -69,7 +70,7 @@ public class Service implements Collector, BeanPostProcessor {
     this.events.add(event);
   }
 
-  @Scheduled(fixedRate = RATE_EXECUTION)
+  @Scheduled(fixedRate = RATE_EXECUTION, initialDelay = INITIAL_DELAY)
   public synchronized void execute() throws Exception {
     if (this.locomotive == null) {
       this.locomotive = connector.getLocomotive();
@@ -80,7 +81,7 @@ public class Service implements Collector, BeanPostProcessor {
     this.presenter.present(updates);
   }
 
-  @Scheduled(fixedRate = RATE_LOCOMOTIVE)
+  @Scheduled(fixedRate = RATE_LOCOMOTIVE, initialDelay = INITIAL_DELAY)
   public synchronized void updateLocomotive() throws TrainSimulatorException {
     this.locomotive = connector.getLocomotive();
     for (LocoUpdateBeanMethod bean : locoUpdateBeanMethods) {
