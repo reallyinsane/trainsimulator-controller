@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 public class Service implements Collector, BeanPostProcessor {
 
   private static final int INITIAL_DELAY = 5000;
-  private static final int RATE_EXECUTION = 100;
+  private static final int RATE_EXECUTION = 250;
   private static final int RATE_LOCOMOTIVE = 20000;
   private final Presenter presenter;
   private final Connector connector;
@@ -51,6 +51,7 @@ public class Service implements Collector, BeanPostProcessor {
   private Map<String, ControlData> data = new HashMap<>();
   private List<Event> events = new ArrayList<>();
   private List<LocoUpdateBeanMethod> locoUpdateBeanMethods = new ArrayList<>();
+  private boolean force = false;
 
   public Service(Connector connector, Presenter presenter) {
     this.connector = connector;
@@ -68,6 +69,11 @@ public class Service implements Collector, BeanPostProcessor {
   @Override
   public synchronized void raiseEvent(Event event) {
     this.events.add(event);
+  }
+
+  @Scheduled(fixedRate = 5000, initialDelay = INITIAL_DELAY)
+  public synchronized void force() {
+    force = !force;
   }
 
   @Scheduled(fixedRate = RATE_EXECUTION, initialDelay = INITIAL_DELAY)
@@ -105,10 +111,11 @@ public class Service implements Collector, BeanPostProcessor {
     for (String control : locomotive.getControls()) {
       ControlData oldData = data.get(control);
       ControlData newData = connector.getControlData(control);
-      if (!Objects.equals(oldData, newData)) {
+      if (force || !Objects.equals(oldData, newData)) {
         dataToUpdate.put(control, newData);
       }
     }
+    force = false;
     return dataToUpdate;
   }
 

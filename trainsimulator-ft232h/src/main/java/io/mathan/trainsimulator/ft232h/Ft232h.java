@@ -31,17 +31,8 @@ public class Ft232h {
     Ft232h myDevice = new Ft232h();
     myDevice.device = new I2C(devices[0]);
     devices[0].open();
-    devices[0].setTimeouts(200, 200);
-    myDevice.device.delay(50);
-    myDevice.white = new Display(myDevice.device, ADDRESS_WHITE);
-    myDevice.device.delay(50);
-    myDevice.red = new Display(myDevice.device, ADDRESS_RED);
-    myDevice.device.delay(50);
-    myDevice.blue = new Display(myDevice.device, ADDRESS_BLUE);
-    myDevice.device.delay(50);
-    myDevice.white.clear();
-    myDevice.red.clear();
-    myDevice.blue.clear();
+//    devices[0].setTimeouts(100, 100);
+    myDevice.device.delay(250);
     myDevice.bargraph = new Bargraph(myDevice.device);
     myDevice.bargraph.clear();
     myDevice.left = new MCP23017(myDevice.device, (byte) 0x20);
@@ -69,37 +60,49 @@ public class Ft232h {
     myDevice.left.off(Pin.GPIO_B_4);
     myDevice.left.off(Pin.GPIO_B_5);
     myDevice.left.update();
+    myDevice.white = new Display(myDevice.device, ADDRESS_WHITE);
+    myDevice.device.delay(250);
+    myDevice.red = new Display(myDevice.device, ADDRESS_RED);
+    myDevice.device.delay(250);
+    myDevice.blue = new Display(myDevice.device, ADDRESS_BLUE);
+    myDevice.device.delay(250);
+    myDevice.white.clear();
+    myDevice.device.delay(250);
+    myDevice.red.clear();
+    myDevice.device.delay(250);
+    myDevice.blue.clear();
+    myDevice.device.delay(250);
+    myDevice.white.setBrightness((byte) 100);
+    myDevice.device.delay(250);
+    myDevice.red.setBrightness((byte) 100);
+    myDevice.device.delay(250);
+    myDevice.blue.setBrightness((byte) 100);
+    myDevice.device.delay(250);
     return myDevice;
   }
 
   void setWhite(int value) throws FTDIException {
     white.setInt(value);
-    device.delay(20);
   }
 
   void setWhite(float value) throws FTDIException {
     white.setFloat(value, 1);
-    device.delay(20);
   }
 
   void setRed(int value) throws FTDIException {
-    red.setInt(value);
     device.delay(20);
   }
 
   void setRed(float value) throws FTDIException {
     red.setFloat(value, 1);
-    device.delay(20);
   }
 
   void setBlue(int value) throws FTDIException {
-    blue.setTime("21:12");
-    device.delay(20);
+    blue.setInt(value);
   }
 
   void setBlue(float value) throws FTDIException {
     blue.setFloat(value, 1);
-    device.delay(20);
   }
 
   public boolean isTop1() throws FTDIException {
@@ -168,8 +171,8 @@ public class Ft232h {
     bargraph.setPercentage((1f * value) / 100, Color.YELLOW);
   }
 
-  public void setBar(float value) throws FTDIException {
-    bargraph.setPercentage(value, Color.YELLOW);
+  public void setBar(float value, Color color) throws FTDIException {
+    bargraph.setPercentage(value, color);
   }
 
   public void shutdown() {

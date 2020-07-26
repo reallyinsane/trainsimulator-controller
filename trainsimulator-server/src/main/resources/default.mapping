@@ -77,3 +77,4 @@ PZB_B40=PZB_40
 
 # Combined controls
 AFBSpeed=[AFBSpeed100,AFBSpeed10,AFBSpeed1]
+TargetSpeed=[TargetSpeed100,TargetSpeed10,TargetSpeed1]
