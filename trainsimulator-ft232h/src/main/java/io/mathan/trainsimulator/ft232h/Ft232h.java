@@ -1,97 +1,197 @@
-/*
- * Copyright 2020 Matthias Hanisch (reallyinsane)
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.mathan.trainsimulator.ft232h;
 
+import io.mathan.adafruit.Bargraph;
+import io.mathan.adafruit.Bargraph.Color;
+import io.mathan.mcp.MCP23017;
+import io.mathan.mcp.MCP23017.Pin;
+import io.mathan.sparkfun.Display;
 import net.sf.yad2xx.Device;
 import net.sf.yad2xx.FTDIException;
 import net.sf.yad2xx.FTDIInterface;
-import net.sf.yad2xx.mpsse.Mpsse;
+import net.sf.yad2xx.mpsse.I2C;
 
-/**
- * Class to connect to API provided by yad2xx.
- */
 public class Ft232h {
 
-  /**
-   * Access GPIO via MPSSE.
-   */
-  private Mpsse mpsse;
-  /**
-   * Current state of high data bits.
-   */
-  private byte high;
-  /**
-   * Current state of low data bits.
-   */
-  private byte low;
+  public static final byte ADDRESS_BLUE = 0x72;
+  public static final byte ADDRESS_RED = 0x73;
+  public static final byte ADDRESS_WHITE = 0x74;
+  private I2C device;
+  private MCP23017 left;
+  private MCP23017 right;
+  private Bargraph bargraph;
+  private Display white;
+  private Display red;
+  private Display blue;
 
-  static Ft232h getInstance() throws FTDIException {
+
+  public static Ft232h getInstance() throws FTDIException {
     System.loadLibrary("FTDIInterface");
     // Get all available FTDI Devices
     Device[] devices = FTDIInterface.getDevices();
-    Device dev = devices[0];
-    Ft232h access = new Ft232h();
-    access.mpsse = new Mpsse(dev);
-    try {
-      access.mpsse.open();
-    } catch (IllegalStateException e) {
-      access.mpsse.close();
-      access.mpsse.open();
-    }
-    return access;
+    Ft232h myDevice = new Ft232h();
+    myDevice.device = new I2C(devices[0]);
+    devices[0].open();
+//    devices[0].setTimeouts(100, 100);
+    myDevice.device.delay(250);
+    myDevice.bargraph = new Bargraph(myDevice.device);
+    myDevice.bargraph.clear();
+    myDevice.left = new MCP23017(myDevice.device, (byte) 0x20);
+    myDevice.device.delay(50);
+    myDevice.right = new MCP23017(myDevice.device, (byte) 0x21);
+    myDevice.device.delay(50);
+    myDevice.left.setupOutput(Pin.GPIO_B_0);
+    myDevice.left.setupOutput(Pin.GPIO_B_1);
+    myDevice.left.setupOutput(Pin.GPIO_B_2);
+    myDevice.left.setupOutput(Pin.GPIO_B_3);
+    myDevice.left.setupOutput(Pin.GPIO_B_4);
+    myDevice.left.setupOutput(Pin.GPIO_B_5);
+    myDevice.left.setupOutput(Pin.GPIO_B_6);
+    myDevice.left.setupOutput(Pin.GPIO_B_7);
+    myDevice.right.setupInput(Pin.GPIO_A_4);
+    myDevice.right.setupInput(Pin.GPIO_A_5);
+    myDevice.right.setupInput(Pin.GPIO_A_6);
+    myDevice.right.setupInput(Pin.GPIO_A_7);
+    myDevice.right.setupOutput(Pin.GPIO_B_0);
+    myDevice.device.delay(50);
+    myDevice.left.off(Pin.GPIO_B_0);
+    myDevice.left.off(Pin.GPIO_B_1);
+    myDevice.left.off(Pin.GPIO_B_2);
+    myDevice.left.off(Pin.GPIO_B_3);
+    myDevice.left.off(Pin.GPIO_B_4);
+    myDevice.left.off(Pin.GPIO_B_5);
+    myDevice.left.update();
+    myDevice.white = new Display(myDevice.device, ADDRESS_WHITE);
+    myDevice.device.delay(250);
+    myDevice.red = new Display(myDevice.device, ADDRESS_RED);
+    myDevice.device.delay(250);
+    myDevice.blue = new Display(myDevice.device, ADDRESS_BLUE);
+    myDevice.device.delay(250);
+    myDevice.white.clear();
+    myDevice.device.delay(250);
+    myDevice.red.clear();
+    myDevice.device.delay(250);
+    myDevice.blue.clear();
+    myDevice.device.delay(250);
+    myDevice.white.setBrightness((byte) 100);
+    myDevice.device.delay(250);
+    myDevice.red.setBrightness((byte) 100);
+    myDevice.device.delay(250);
+    myDevice.blue.setBrightness((byte) 100);
+    myDevice.device.delay(250);
+    return myDevice;
   }
 
-  /**
-   * Enables a certain pin and updates regarding data bit. {@link #execute()} needs to be called to push the new value to the device.
-   */
-  public void on(Pin pin) {
-    if (pin.isHigh()) {
-      high |= pin.getAddress();
+  void setWhite(int value) throws FTDIException {
+    white.setInt(value);
+  }
+
+  void setWhite(float value) throws FTDIException {
+    white.setFloat(value, 1);
+  }
+
+  void setRed(int value) throws FTDIException {
+    device.delay(20);
+  }
+
+  void setRed(float value) throws FTDIException {
+    red.setFloat(value, 1);
+  }
+
+  void setBlue(int value) throws FTDIException {
+    blue.setInt(value);
+  }
+
+  void setBlue(float value) throws FTDIException {
+    blue.setFloat(value, 1);
+  }
+
+  public boolean isTop1() throws FTDIException {
+    return right.isSet(Pin.GPIO_A_7);
+  }
+
+  public boolean isTop2() throws FTDIException {
+    return right.isSet(Pin.GPIO_A_6);
+  }
+
+  public boolean isFront1() throws FTDIException {
+    return right.isSet(Pin.GPIO_A_5);
+  }
+
+  public boolean isFront2() throws FTDIException {
+    return right.isSet(Pin.GPIO_A_4);
+  }
+
+  public void setPzb1000(boolean enable) throws FTDIException {
+    enable(left, Pin.GPIO_B_0, enable);
+  }
+
+  public void setPzb500(boolean enable) throws FTDIException {
+    enable(left, Pin.GPIO_B_1, enable);
+  }
+
+  public void setPzb40(boolean enable) throws FTDIException {
+    enable(left, Pin.GPIO_B_2, enable);
+  }
+
+  public void setPzb85(boolean enable) throws FTDIException {
+    enable(left, Pin.GPIO_B_3, enable);
+  }
+
+  public void setPzb70(boolean enable) throws FTDIException {
+    enable(left, Pin.GPIO_B_4, enable);
+  }
+
+  public void setPzb55(boolean enable) throws FTDIException {
+    enable(left, Pin.GPIO_B_5, enable);
+  }
+
+  public void setLZBBuzzer(boolean enable) throws FTDIException {
+    enable(right, Pin.GPIO_B_0, enable);
+  }
+
+  public void setSifaBuzzer(boolean enable) throws FTDIException {
+    enable(left, Pin.GPIO_B_7, enable);
+  }
+
+  public void setSifaLight(boolean enable) throws FTDIException {
+    enable(left, Pin.GPIO_B_6, enable);
+  }
+
+  private void enable(MCP23017 mcp23017, Pin pin, boolean enable) throws FTDIException {
+    if (enable) {
+      mcp23017.on(pin);
+      mcp23017.update();
     } else {
-      low |= pin.getAddress();
+      mcp23017.off(pin);
+      mcp23017.update();
     }
   }
 
-  /**
-   * Disables a certain pin and updates regarding data bit. {@link #execute()} needs to be called to push the new value to the device.
-   */
-  public void off(Pin pin) {
-    if (pin.isHigh()) {
-      high &= ~pin.getAddress();
-    } else {
-      low &= ~pin.getAddress();
-    }
+  public void setBar(int value) throws FTDIException {
+    bargraph.setPercentage((1f * value) / 100, Color.YELLOW);
   }
 
-  /**
-   * Pushes the data bits to the device.
-   */
-  public void execute() {
-    mpsse.setDataBitsHigh(high, (byte) 0xff);
-    mpsse.setDataBitsLow(low, (byte) 0xff);
-    mpsse.execute();
+  public void setBar(float value, Color color) throws FTDIException {
+    bargraph.setPercentage(value, color);
   }
 
-  /**
-   * Clears all data bits and pushs the changes to the device.
-   */
   public void shutdown() {
-    mpsse.setDataBitsLow((byte) 0xff, (byte) 0x00);
-    mpsse.setDataBitsHigh((byte) 0xff, (byte) 0x00);
-    mpsse.execute();
-    mpsse.close();
-    ;
+    this.device.close();
+  }
+
+  public void setBlueTime(String time) throws FTDIException {
+    this.blue.setTime(time);
+  }
+
+  public void setRedTime(String time) throws FTDIException {
+    this.red.setTime(time);
+  }
+
+  public void setWhiteTime(String time) throws FTDIException {
+    this.white.setTime(time);
+  }
+
+  public void delay(int i) {
+    device.delay(i);
   }
 }

@@ -14,7 +14,6 @@
  */
 package io.mathan.trainsimulator.service;
 
-import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
@@ -34,7 +33,7 @@ public class Controller {
 
   private Service service;
 
-  private Map<Control, ControlData> currentData = new HashMap<>();
+  private Map<String, ControlData> currentData = new HashMap<>();
 
   public Controller(Service service) {
     this.service = service;
@@ -52,14 +51,14 @@ public class Controller {
 
   @GetMapping(value = "/control/{control}", produces = {MediaType.APPLICATION_JSON_VALUE})
   public ControlData getControlValue(@PathVariable("control") String control) throws TrainSimulatorException, UnsupportedControlException {
-    return currentData.get(Control.valueOf(control));
+    return currentData.get(control);
   }
 
   @PutMapping("/control/{control}")
   public void setControlValue(@PathVariable("control") String control, @RequestParam(name = "value") Float value) throws TrainSimulatorException, UnsupportedControlException {
     ControlData data = new ControlData();
     data.setCurrent(value);
-    Event event = new Event(Control.valueOf(control), data);
+    Event event = new Event(control, data);
     service.raiseEvent(event);
   }
 

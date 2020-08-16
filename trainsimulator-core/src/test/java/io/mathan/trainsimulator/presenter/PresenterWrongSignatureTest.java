@@ -44,7 +44,7 @@ public class PresenterWrongSignatureTest {
 
   static class PresentBean {
 
-    @Present(controls = {Control.Pzb55})
+    @Present({Control.Pzb55})
     public void present(Control control) {
 
     }

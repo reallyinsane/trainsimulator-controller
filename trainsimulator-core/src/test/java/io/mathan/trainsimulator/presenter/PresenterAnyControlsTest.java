@@ -38,7 +38,7 @@ public class PresenterAnyControlsTest {
         .withUserConfiguration(Configuration.class)
         .run(context -> {
           assertThat(context).getBean(Presenter.class).isNotNull();
-          Control control = Control.Pzb55;
+          String control = Control.Pzb55;
           ControlData data = new ControlData();
           int calls = PresenterAnyControlsTest.calls;
           context.getBean(Presenter.class).present(control, data);
@@ -52,7 +52,7 @@ public class PresenterAnyControlsTest {
         .withUserConfiguration(Configuration.class)
         .run(context -> {
           assertThat(context).getBean(Presenter.class).isNotNull();
-          Control control = Control.Pzb70;
+          String control = Control.Pzb70;
           ControlData data = new ControlData();
           int calls = PresenterAnyControlsTest.calls;
           context.getBean(Presenter.class).present(control, data);

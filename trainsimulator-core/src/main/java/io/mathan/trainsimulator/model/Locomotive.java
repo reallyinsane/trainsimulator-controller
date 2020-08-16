@@ -20,13 +20,13 @@ import java.util.List;
 
 public class Locomotive {
 
-  private final List<Control> controls = new ArrayList<>();
+  private final List<String> controls = new ArrayList<>();
   private String provider;
   private String product;
   private String engine;
   private boolean combinedThrottleBrake;
 
-  public List<Control> getControls() {
+  public List<String> getControls() {
     return this.controls;
   }
 

@@ -15,7 +15,6 @@
 
 package io.mathan.trainsimulator.service;
 
-import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,15 +39,15 @@ public class Presenter implements BeanPostProcessor {
   private Logger logger = LoggerFactory.getLogger(Presenter.class);
 
   private List<PresentAnnotatedBeanMethod> anyControl = new ArrayList<>();
-  private Map<Control, List<PresentAnnotatedBeanMethod>> specificControl = new HashMap<>();
+  private Map<String, List<PresentAnnotatedBeanMethod>> specificControl = new HashMap<>();
 
   /**
    * Initiates an update of the presentation for the given controls.
    *
    * @param updates The controls with their new values.
    */
-  public void present(Map<Control, ControlData> updates) {
-    for (Control control : updates.keySet()) {
+  public void present(Map<String, ControlData> updates) {
+    for (String control : updates.keySet()) {
       present(control, updates.get(control));
     }
   }
@@ -59,7 +58,7 @@ public class Presenter implements BeanPostProcessor {
    * @param control The control.
    * @param data The new value.
    */
-  public void present(Control control, ControlData data) {
+  public void present(String control, ControlData data) {
     List<PresentAnnotatedBeanMethod> beans = specificControl.get(control);
     Event event = new Event(control, data);
     if (beans != null) {
@@ -87,10 +86,10 @@ public class Presenter implements BeanPostProcessor {
         if (method.getParameterCount() != 1 || !Event.class.equals(method.getParameterTypes()[0])) {
           throw new FatalBeanException(String.format("Methods annotated with @Present need a parameter of type %s", Event.class.getName()));
         }
-        for (Control control : annotation.controls()) {
+        for (String control : annotation.value()) {
           addMethod(control, bean, method);
         }
-        if (annotation.controls().length == 0) {
+        if (annotation.value().length == 0) {
           PresentAnnotatedBeanMethod listener = new PresentAnnotatedBeanMethod();
           listener.bean = bean;
           listener.method = method;
@@ -109,7 +108,7 @@ public class Presenter implements BeanPostProcessor {
    * @param bean The component.
    * @param method The annotated method.
    */
-  private void addMethod(Control control, Object bean, Method method) {
+  private void addMethod(String control, Object bean, Method method) {
     List<PresentAnnotatedBeanMethod> beans = specificControl.computeIfAbsent(control, k -> new ArrayList<>());
     PresentAnnotatedBeanMethod listener = new PresentAnnotatedBeanMethod();
     listener.bean = bean;

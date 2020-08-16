@@ -23,6 +23,7 @@ import io.mathan.trainsimulator.model.generic.GenericLocomotive;
 import io.mathan.trainsimulator.service.Connector;
 import io.mathan.trainsimulator.service.TrainSimulatorException;
 import io.mathan.trainsimulator.service.UnsupportedControlException;
+import io.mathan.trainsimulator.service.jni.Mapping.CombinedMapping;
 import io.mathan.trainsimulator.service.jni.Mapping.VirtualMapping;
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,35 +40,44 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
  * The Connector is responsible for communication with TrainSimulator API via {@link NativeLibrary}. Therefor a {@link NativeLibraryFactory} is necessary to create the API interface.
  */
 @Component
-@Profile("native")
 public class NativeConnector implements InitializingBean, Connector {
 
-  private static final String DELIMITER_LOCO = ".:.";
-  private static final String DELIMITER_CONTROLLER = "::";
-  private static final Map<Control, Integer> commonControlsMap = new HashMap<>();
-  private final Map<Control, Integer> controlsMap = new HashMap<>();
-  private final Map<Control, VirtualControl> virtualControlsMap = new HashMap<>();
+  public static final String DELIMITER_LOCO = ".:.";
+  public static final String DELIMITER_CONTROLLER = "::";
+  private static final Map<String, Integer> commonControlsMap = new HashMap<>();
+  private final Map<String, Integer> controlsMap = new HashMap<>();
+  private final Map<String, VirtualControl> virtualControlsMap = new HashMap<>();
+  private final Map<String, CombinedControl> combinedControlMap = new HashMap<>();
   private Logger logger = LoggerFactory.getLogger(NativeConnector.class);
   private NativeLibraryFactory factory;
   private NativeLibrary nativeLibrary;
 
+  public static final int ID_CommonCurrentLatitude = 400;
+  public static final int ID_CommonCurrentLongitude = 401;
+  public static final int ID_CommonFuelLevel = 402;
+  public static final int ID_CommonTunnel = 403;
+  public static final int ID_CommonGradient = 404;
+  public static final int ID_CommonHeading = 405;
+  public static final int ID_CommonCurrentTimeHour = 406;
+  public static final int ID_CommonCurrentTimeMinute = 407;
+  public static final int ID_CommonCurrentTimeSecond = 408;
+
   static {
-    commonControlsMap.put(Control.CommonCurrentLatitude, 400);
-    commonControlsMap.put(Control.CommonCurrentLongitude, 401);
-    commonControlsMap.put(Control.CommonFuelLevel, 402);
-    commonControlsMap.put(Control.CommonTunnel, 403);
-    commonControlsMap.put(Control.CommonGradient, 404);
-    commonControlsMap.put(Control.CommonHeading, 405);
-    commonControlsMap.put(Control.CommonCurrentTimeHour, 406);
-    commonControlsMap.put(Control.CommonCurrentTimeMinute, 407);
-    commonControlsMap.put(Control.CommonCurrentTimeSecond, 408);
+    commonControlsMap.put(Control.CommonCurrentLatitude, ID_CommonCurrentLatitude);
+    commonControlsMap.put(Control.CommonCurrentLongitude, ID_CommonCurrentLongitude);
+    commonControlsMap.put(Control.CommonFuelLevel, ID_CommonFuelLevel);
+    commonControlsMap.put(Control.CommonTunnel, ID_CommonTunnel);
+    commonControlsMap.put(Control.CommonGradient, ID_CommonGradient);
+    commonControlsMap.put(Control.CommonHeading, ID_CommonHeading);
+    commonControlsMap.put(Control.CommonCurrentTimeHour, ID_CommonCurrentTimeHour);
+    commonControlsMap.put(Control.CommonCurrentTimeMinute, ID_CommonCurrentTimeMinute);
+    commonControlsMap.put(Control.CommonCurrentTimeSecond, ID_CommonCurrentTimeSecond);
   }
 
   public NativeConnector(NativeLibraryFactory factory) {
@@ -93,6 +103,9 @@ public class NativeConnector implements InitializingBean, Connector {
           .addAll(getVirtualControls(defaultMapping, locoMapping));
       locomotive
           .getControls()
+          .addAll(getCombinedControls(defaultMapping, locoMapping));
+      locomotive
+          .getControls()
           .addAll(commonControlsMap.keySet());
       logger.info("ENGINE {} {} {}", locomotive.getProvider(), locomotive.getProduct(), locomotive.getEngine());
     }
@@ -100,7 +113,7 @@ public class NativeConnector implements InitializingBean, Connector {
   }
 
   @Override
-  public synchronized ControlData getControlData(Control control) throws TrainSimulatorException, UnsupportedControlException {
+  public synchronized ControlData getControlData(String control) throws TrainSimulatorException, UnsupportedControlException {
     Integer id = commonControlsMap.get(control);
     if (id == null) {
       id = controlsMap.get(control);
@@ -124,13 +137,27 @@ public class NativeConnector implements InitializingBean, Connector {
           value.setCurrent(0f);
         }
         return value;
+      } else {
+        CombinedControl combinedControl = combinedControlMap.get(control);
+        if (combinedControl != null) {
+          float value = 0;
+          for (Integer subControlId : combinedControl.getIds()) {
+            float subControlValue = this.nativeLibrary.GetControllerValue(subControlId, 0);
+            value = value * 10 + subControlValue;
+          }
+          ControlData controlData = new ControlData();
+          controlData.setCurrent(value);
+          controlData.setMinimum(0f);
+          controlData.setMaximum(value);
+          return controlData;
+        }
       }
     }
     return null;
   }
 
   @Override
-  public void setControlData(Control control, ControlData data) throws TrainSimulatorException, UnsupportedControlException {
+  public void setControlData(String control, ControlData data) throws TrainSimulatorException, UnsupportedControlException {
     synchronized (controlsMap) {
       Integer id = controlsMap.get(control);
       if (id != null) {
@@ -186,8 +213,34 @@ public class NativeConnector implements InitializingBean, Connector {
     return list;
   }
 
-  private List<Control> getVirtualControls(Mapping defaultMapping, Mapping locoMapping) {
-    List<Control> list = new ArrayList<>();
+  private List<String> getCombinedControls(Mapping defaultMapping, Mapping locoMapping) {
+    List<String> list = new ArrayList<>();
+    synchronized (combinedControlMap) {
+      combinedControlMap.clear();
+      defaultMapping.getCombinedMapping().forEach(this::checkCombinedControl);
+      locoMapping.getCombinedMapping().forEach(this::checkCombinedControl);
+    }
+    return list;
+  }
+
+  private void checkCombinedControl(String controlName, CombinedMapping combinedMapping) {
+    List<Integer> ids = new ArrayList<>();
+    boolean allAvailable = true;
+    for (String control : combinedMapping.getControls()) {
+      Integer id = controlsMap.get(control);
+      if (id == null) {
+        allAvailable = false;
+        break;
+      }
+      ids.add(id);
+    }
+    if (allAvailable) {
+      combinedControlMap.put(controlName, new CombinedControl(ids));
+    }
+  }
+
+  private List<String> getVirtualControls(Mapping defaultMapping, Mapping locoMapping) {
+    List<String> list = new ArrayList<>();
     synchronized (virtualControlsMap) {
       virtualControlsMap.clear();
       String result = this.nativeLibrary.GetControllerList();
@@ -200,7 +253,7 @@ public class NativeConnector implements InitializingBean, Connector {
               defaultMapping.getVirtualMapping().get(controlName);
           if (virtualControls != null) {
             for (VirtualMapping virtualControl : virtualControls) {
-              Control control = Control.fromString(virtualControl.getName());
+              String control = virtualControl.getName();
               if (control != null) {
                 list.add(control);
                 VirtualControl vc = new VirtualControl(index, virtualControl.getValue());
@@ -215,17 +268,17 @@ public class NativeConnector implements InitializingBean, Connector {
     return list;
   }
 
-  private List<Control> getControls(Mapping defaultMapping, Mapping locoMapping) {
+  private List<String> getControls(Mapping defaultMapping, Mapping locoMapping) {
     synchronized (controlsMap) {
       controlsMap.clear();
-      List<Control> list = new ArrayList<>();
+      List<String> list = new ArrayList<>();
       String result = this.nativeLibrary.GetControllerList();
       if (result != null) {
         StringTokenizer tokenizer = new StringTokenizer(result, DELIMITER_CONTROLLER);
         int index = 0;
         while (tokenizer.hasMoreTokens()) {
           String controlName = tokenizer.nextToken();
-          Control control = getControlForName(controlName, defaultMapping, locoMapping);
+          String control = getControlForName(controlName, defaultMapping, locoMapping);
           if (control != null) {
             list.add(control);
             controlsMap.put(control, index);
@@ -237,27 +290,17 @@ public class NativeConnector implements InitializingBean, Connector {
     }
   }
 
-  private Control getControlForName(
+  private String getControlForName(
       String controlName, Mapping defaultMapping, Mapping locoMapping) {
-    Control control = Control.fromString(controlName);
-    if (control != null) {
-      return control;
-    }
     String locoControlName = locoMapping.getSimpleMapping().get(controlName);
     if (locoControlName != null) {
-      control = Control.fromString(locoControlName);
-      if (control != null) {
-        return control;
-      }
+      return locoControlName;
     }
     String defaultControlName = defaultMapping.getSimpleMapping().get(controlName);
     if (defaultControlName != null) {
-      control = Control.fromString(defaultControlName);
-      if (control != null) {
-        return control;
-      }
+      return defaultControlName;
     }
-    return null;
+    return controlName;
   }
 
   private Mapping loadMapping(InputStream in) {
@@ -274,10 +317,20 @@ public class NativeConnector implements InitializingBean, Connector {
         if (index1 != -1) {
           int index2 = line.indexOf('=', index1 + 1);
           if (index2 == -1) {
-            // simple mapping
-            String key = line.substring(0, index1);
-            String value = line.substring(index1 + 1);
-            mapping.getSimpleMapping().put(key, value);
+            int index3 = line.indexOf("[", index1 + 1);
+            if (index3 == -1) {
+              // simple mapping
+              String key = line.substring(0, index1);
+              String value = line.substring(index1 + 1);
+              mapping.getSimpleMapping().put(key, value);
+            } else {
+              String combinedControlName = line.substring(0, index1);
+              int index4 = line.indexOf("]", index3 + 3);
+              String combined = line.substring(index3 + 1, index4);
+              String[] controls = combined.split(",");
+              CombinedMapping comnbinedControl = new CombinedMapping(controls);
+              mapping.getCombinedMapping().put(combinedControlName, comnbinedControl);
+            }
           } else {
             String virtualControlName = line.substring(0, index1);
             Float value = Float.valueOf(line.substring(index1 + 1, index2));

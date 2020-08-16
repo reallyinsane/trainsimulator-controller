@@ -15,8 +15,6 @@
 
 package io.mathan.trainsimulator.service;
 
-import io.mathan.trainsimulator.model.Control;
-
 /**
  * Exception indicating that the requested control is not supported by the active locomotive.
  *
@@ -25,14 +23,8 @@ import io.mathan.trainsimulator.model.Control;
 public class UnsupportedControlException extends Exception {
 
   private static final long serialVersionUID = 1L;
-  private final Control control;
 
-  public UnsupportedControlException(Control control) {
-    super(control.getValue());
-    this.control = control;
-  }
-
-  public Control getControl() {
-    return this.control;
+  public UnsupportedControlException(String control) {
+    super(control);
   }
 }

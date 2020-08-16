@@ -15,7 +15,6 @@
 
 package io.mathan.trainsimulator.service;
 
-import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import io.mathan.trainsimulator.model.Locomotive;
 import io.mathan.trainsimulator.model.generic.GenericLocomotive;
@@ -42,15 +41,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class Service implements Collector, BeanPostProcessor {
 
-  private static final int RATE_EXECUTION = 100;
+  private static final int INITIAL_DELAY = 5000;
+  private static final int RATE_EXECUTION = 250;
   private static final int RATE_LOCOMOTIVE = 20000;
   private final Presenter presenter;
   private final Connector connector;
   private Logger logger = LoggerFactory.getLogger(Service.class);
   private Locomotive locomotive;
-  private Map<Control, ControlData> data = new HashMap<>();
+  private Map<String, ControlData> data = new HashMap<>();
   private List<Event> events = new ArrayList<>();
   private List<LocoUpdateBeanMethod> locoUpdateBeanMethods = new ArrayList<>();
+  private boolean force = false;
 
   public Service(Connector connector, Presenter presenter) {
     this.connector = connector;
@@ -70,18 +71,23 @@ public class Service implements Collector, BeanPostProcessor {
     this.events.add(event);
   }
 
-  @Scheduled(fixedRate = RATE_EXECUTION)
+  @Scheduled(fixedRate = 5000, initialDelay = INITIAL_DELAY)
+  public synchronized void force() {
+    force = !force;
+  }
+
+  @Scheduled(fixedRate = RATE_EXECUTION, initialDelay = INITIAL_DELAY)
   public synchronized void execute() throws Exception {
     if (this.locomotive == null) {
       this.locomotive = connector.getLocomotive();
     }
     sendToConnector();
-    Map<Control, ControlData> updates = getUpdatesFromConnector();
+    Map<String, ControlData> updates = getUpdatesFromConnector();
     this.data.putAll(updates);
     this.presenter.present(updates);
   }
 
-  @Scheduled(fixedRate = RATE_LOCOMOTIVE)
+  @Scheduled(fixedRate = RATE_LOCOMOTIVE, initialDelay = INITIAL_DELAY)
   public synchronized void updateLocomotive() throws TrainSimulatorException {
     this.locomotive = connector.getLocomotive();
     for (LocoUpdateBeanMethod bean : locoUpdateBeanMethods) {
@@ -100,15 +106,16 @@ public class Service implements Collector, BeanPostProcessor {
     this.events.clear();
   }
 
-  private Map<Control, ControlData> getUpdatesFromConnector() throws TrainSimulatorException, UnsupportedControlException {
-    Map<Control, ControlData> dataToUpdate = new HashMap<>();
-    for (Control control : locomotive.getControls()) {
+  private Map<String, ControlData> getUpdatesFromConnector() throws TrainSimulatorException, UnsupportedControlException {
+    Map<String, ControlData> dataToUpdate = new HashMap<>();
+    for (String control : locomotive.getControls()) {
       ControlData oldData = data.get(control);
       ControlData newData = connector.getControlData(control);
-      if (!Objects.equals(oldData, newData)) {
+      if (force || !Objects.equals(oldData, newData)) {
         dataToUpdate.put(control, newData);
       }
     }
+    force = false;
     return dataToUpdate;
   }
 

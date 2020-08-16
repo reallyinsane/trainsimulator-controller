@@ -14,14 +14,13 @@
  */
 package io.mathan.trainsimulator.ft232h;
 
+import io.mathan.adafruit.Bargraph.Color;
 import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
 import io.mathan.trainsimulator.service.Event;
 import io.mathan.trainsimulator.service.Present;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.PreDestroy;
-import org.apache.commons.lang3.StringUtils;
+import net.sf.yad2xx.FTDIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -37,53 +36,127 @@ public class PzbPresenter implements InitializingBean {
 
   private Logger logger = LoggerFactory.getLogger(PzbPresenter.class);
 
-  private Map<Control, Pin> map = new HashMap<>();
+  private String time;
+  private float hour = 0f;
+  private float minute = 0f;
 
-  private PzbConfiguration configuration;
+  private int DELAY = 20;
+
   private Ft232h ft232h;
 
-  public PzbPresenter(PzbConfiguration configuration) {
-    this.configuration = configuration;
-    if (StringUtils.isNotBlank(configuration.getPzb55())) {
-      map.put(Control.Pzb55, Pin.valueOf(configuration.getPzb55()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb70())) {
-      map.put(Control.Pzb70, Pin.valueOf(configuration.getPzb70()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb85())) {
-      map.put(Control.Pzb85, Pin.valueOf(configuration.getPzb85()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb40())) {
-      map.put(Control.Pzb40, Pin.valueOf(configuration.getPzb40()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb500())) {
-      map.put(Control.Pzb500, Pin.valueOf(configuration.getPzb500()));
-    }
-    if (StringUtils.isNotBlank(configuration.getPzb1000())) {
-      map.put(Control.Pzb1000, Pin.valueOf(configuration.getPzb1000()));
-    }
-    if (StringUtils.isNotBlank(configuration.getSifaLight())) {
-      map.put(Control.SifaLight, Pin.valueOf(configuration.getSifaLight()));
-    }
-    if (StringUtils.isNotBlank(configuration.getSifaWarn())) {
-      map.put(Control.SifaAlarm, Pin.valueOf(configuration.getSifaWarn()));
+  public PzbPresenter() {
+  }
+
+  @Present(Control.Pzb55)
+  public void pzb55(Event event) throws FTDIException {
+    ft232h.setPzb55(toBoolean(event));
+  }
+
+  @Present(Control.Pzb70)
+  public void pzb70(Event event) throws FTDIException {
+    ft232h.setPzb70(toBoolean(event));
+
+  }
+
+  @Present(Control.Pzb85)
+  public void pzb85(Event event) throws FTDIException {
+    ft232h.setPzb85(toBoolean(event));
+  }
+
+  @Present(Control.Pzb40)
+  public void pzb40(Event event) throws FTDIException {
+    ft232h.setPzb40(toBoolean(event));
+  }
+
+  @Present(Control.Pzb500)
+  public void pzb500(Event event) throws FTDIException {
+    ft232h.setPzb500(toBoolean(event));
+  }
+
+  @Present(Control.Pzb1000)
+  public void pzb1000(Event event) throws FTDIException {
+    ft232h.setPzb1000(toBoolean(event));
+  }
+
+  @Present(Control.SifaLight)
+  public void sifaLight(Event event) throws FTDIException {
+    ft232h.setSifaLight(toBoolean(event));
+  }
+
+  @Present(Control.SifaAlarm)
+  public void sifaAlarm(Event event) throws FTDIException {
+    ft232h.setSifaBuzzer(toBoolean(event));
+  }
+
+  @Present({Control.CommonCurrentTimeHour, Control.CommonCurrentTimeMinute})
+  public void time(Event event) throws FTDIException {
+    if (isTopUp()) {
+      if (Control.CommonCurrentTimeHour.equals(event.getControl())) {
+        hour = event.getData().getCurrent();
+      } else {
+        minute = event.getData().getCurrent();
+      }
+      time = String.format("%02d:%02d", (int) hour, (int) minute);
+      ft232h.setBlueTime(time);
     }
   }
 
-  /**
-   * Registerd method to receive events which are forwared to FT232h.
-   */
-  @Present
-  public void present(Event event) {
-    if (map.containsKey(event.getControl())) {
-      if (Float.valueOf(1.0F).equals(event.getData().getCurrent())) {
-        ft232h.on(map.get(event.getControl()));
-      } else {
-        ft232h.off(map.get(event.getControl()));
-      }
-      ft232h.execute();
+  @Present(Control.SpeedometerKPH)
+  public void speed(Event event) throws FTDIException {
+    ft232h.setWhite(event.getData().getCurrent());
+  }
+
+  @Present(Control.LZBBuzzer)
+  public void lzbWarning(Event event) throws FTDIException {
+    //TODO
+  }
+
+  @Present({"VSoll", "AFBSpeed"})
+  public void currentMaxSpeed(Event event) throws FTDIException {
+    if (isFrontUp()) {
+      ft232h.setRed(event.getData().getCurrent());
     }
   }
+
+  @Present({Control.RawSpeedTarget, "TargetSpeed"})
+  public void targetSpeed(Event event) throws FTDIException {
+    if (isFrontDown()) {
+      ft232h.setRed(event.getData().getCurrent());
+    }
+  }
+
+  @Present(Control.RawTargetDistance)
+
+  public void lzbDistance(Event event) throws FTDIException {
+    Float distance = event.getData().getCurrent();
+    Color color = distance > 4000 ? Color.GREEN : (distance > 1000 ? Color.YELLOW : Color.RED);
+    ft232h.setBar(distance / 4000
+        , color);
+    if (isTopDown()) {
+      ft232h.setBlue(distance.intValue());
+    }
+  }
+
+  private boolean isTopUp() throws FTDIException {
+    return ft232h.isTop1();
+  }
+
+  private boolean isTopDown() throws FTDIException {
+    return ft232h.isTop2();
+  }
+
+  private boolean isFrontUp() throws FTDIException {
+    return ft232h.isFront1();
+  }
+
+  private boolean isFrontDown() throws FTDIException {
+    return ft232h.isFront2();
+  }
+
+  private boolean toBoolean(Event event) {
+    return Float.valueOf(1.0f).equals(event.getData().getCurrent());
+  }
+
 
   /**
    * Initialization will trigger all PINs on and off to verify functionality.
@@ -91,28 +164,28 @@ public class PzbPresenter implements InitializingBean {
   @Override
   public void afterPropertiesSet() throws Exception {
     ft232h = Ft232h.getInstance();
-    logger.info("startup test started");
-    Control[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
-    for (Control control : controls) {
-      logger.info(String.format("%s ON", control.name()));
-      present(getOnEvent(control));
-      Thread.sleep(500);
-      logger.info(String.format("%s OFF", control.name()));
-      present(getOffEvent(control));
-      Thread.sleep(500);
-    }
-    logger.info("startup test finished");
+//    logger.info("startup test started");
+//    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
+//    for (String control : controls) {
+//      logger.info(String.format("%s ON", control));
+//      present(getOnEvent(control));
+//      Thread.sleep(500);
+//      logger.info(String.format("%s OFF", control));
+//      present(getOffEvent(control));
+//      Thread.sleep(500);
+//    }
+//    logger.info("startup test finished");
   }
 
-  private Event getOnEvent(Control control) {
+  private Event getOnEvent(String control) {
     return getEvent(control, 1.0f);
   }
 
-  private Event getOffEvent(Control control) {
+  private Event getOffEvent(String control) {
     return getEvent(control, 0.0f);
   }
 
-  private Event getEvent(Control control, float value) {
+  private Event getEvent(String control, float value) {
     ControlData data = new ControlData();
     data.setCurrent(value);
     return new Event(control, data);

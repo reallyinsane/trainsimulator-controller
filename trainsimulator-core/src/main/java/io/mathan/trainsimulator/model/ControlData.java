@@ -48,6 +48,10 @@ public class ControlData {
     this.minimum = minimum;
   }
 
+  public boolean toBoolean() {
+    return Float.valueOf(1.0F).equals(current);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

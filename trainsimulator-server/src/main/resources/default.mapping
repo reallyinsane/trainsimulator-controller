@@ -17,9 +17,28 @@
 # API controls. So the mapping defines a control with a certain value to map to
 # an API control:
 # <engine control name>=<engine control value>=<API control name>
+#
+# Sample for engine control "PZB LM Betrieb" which is mapped to PZB_55, PZB_70 and
+# PZB_85 depending on its value.
+# PZB LM Betrieb=1=PZB_85
+# PZB LM Betrieb=2=PZB_70
+# PZB LM Betrieb=3=PZB_55
 # 
+# Case 3 - Combined control
+#
+# Some controls are separated to display single digits of a number. Therefore
+# multiple control values need to be combined. For this special case a combined
+# control can define the controls for the single digits to be calculated as
+# combined value:
+# <combined control name>=[engine control name1, engine control name2,...]
+#
+# Sample for combined control AFBSpeed which combines the single controls
+# AFBSpeed100, AFBSpeed10 and AFBSpeed1 to a single value.
+# AFBSpeed=[AFBSpeed100,AFBSpeed10,AFBSpeed1]
+#
 # The mapping can be defined either in the default.mapping file or a separate file
 # for a certain engine. The filename must be <engine name>.mapping then.
+#
 ################################################################################
 # Renaming
 PZB_B40=PZB_40
@@ -55,3 +74,7 @@ PZB_500hz_Control=PZB_500
 PZB_500Hz_Control=PZB_500
 PZB_1000Hz_Control=PZB_1000
 PZB_B40=PZB_40
+
+# Combined controls
+AFBSpeed=[AFBSpeed100,AFBSpeed10,AFBSpeed1]
+TargetSpeed=[TargetSpeed100,TargetSpeed10,TargetSpeed1]

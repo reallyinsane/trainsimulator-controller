@@ -15,48 +15,67 @@
 
 package io.mathan.trainsimulator.model;
 
-public enum Control {
-  SifaEnabled("VigilEnable"),
-  PzbEnabled("PZBEnable"),
-  Pzb55("PZB_55"),
-  Pzb70("PZB_70"),
-  Pzb85("PZB_85"),
-  Pzb40("PZB_40"),
-  Pzb500("PZB_500"),
-  Pzb1000("PZB_1000"),
-  SifaLight("VigilLight"),
-  SifaAlarm("VigilAlarm"),
-  PzbWarning("PzbWarning"),
-  CmdSifa("VigilReset"),
-  CmdPzbWachsam("Cmd_Wachsam"),
-  CmdPzbFrei("Cmd_Free"),
-  CmdPzbBefehl("Cmd_40"),
-  CommonCurrentLatitude("CommonCurrentLatitude"),
-  CommonCurrentLongitude("CommonCurrentLongitude"),
-  CommonFuelLevel("CommonFuelLevel"),
-  CommonTunnel("CommonTunnel"),
-  CommonGradient("CommonGradient"),
-  CommonHeading("CommonHeading"),
-  CommonCurrentTimeHour("CommonCurrentTimeHour"),
-  CommonCurrentTimeMinute("CommonCurrentTimeMinute"),
-  CommonCurrentTimeSecond("CommonCurrentTimeSecond");
+public interface Control {
 
-  private final String value;
+  String SifaEnabled = "VigilEnable";
+  String PzbEnabled = "PZBEnable";
+  String Pzb55 = "PZB_55";
+  String Pzb70 = "PZB_70";
+  String Pzb85 = "PZB_85";
+  String Pzb40 = "PZB_40";
+  String Pzb500 = "PZB_500";
+  String Pzb1000 = "PZB_1000";
+  String SifaLight = "VigilLight";
+  String SifaAlarm = "VigilAlarm";
+  String PzbWarning = "PzbWarning";
+  String CmdSifa = "VigilReset";
+  String CmdPzbWachsam = "Cmd_Wachsam"; //CMD_Acknowledge
+  String CmdPzbFrei = "Cmd_Free";
+  String CmdPzbBefehl = "Cmd_40"; // CMD_Override
+  String CommonCurrentLatitude = "CommonCurrentLatitude";
+  String CommonCurrentLongitude = "CommonCurrentLongitude";
+  String CommonFuelLevel = "CommonFuelLevel";
+  String CommonTunnel = "CommonTunnel";
+  String CommonGradient = "CommonGradient";
+  String CommonHeading = "CommonHeading";
+  String CommonCurrentTimeHour = "CommonCurrentTimeHour";
+  String CommonCurrentTimeMinute = "CommonCurrentTimeMinute";
+  String CommonCurrentTimeSecond = "CommonCurrentTimeSecond";
 
-  Control(String value) {
-    this.value = value;
-  }
+  String SpeedometerKPH = "SpeedometerKPH";
+  String SpeedometerMPH = "SpeedometerMPH"; // for US/UK
+  String AWS = "AWS"; // similar to Sifa in England
+  String AFBSpeed = "AFB_Speed"; //AFBTargetSpeed
+  String LZBSpeed = "LZB_Speed";
+  String LZBBuzzer = "LZB_Buzzer";
 
-  public static Control fromString(String value) {
-    for (Control control : Control.values()) {
-      if (control.value.equals(value)) {
-        return control;
-      }
-    }
-    return null;
-  }
+  String RawTargetDistance = "RawTargetDistance"; // TargetDistance
+  String RawSpeedTarget = "RawSpeedTarget";
+  /*
+  C:\Users\Matthias\ts_temp\DTG\RhineValley1\RailVehicles\Electric\ICE3\Default\Engine\ICE3_driving_A.xml (79 hits)
+	Line 1010: 							<ControlName d:type="cDeltaString">TargetSpeed1</ControlName>
+	Line 1057: 							<ControlName d:type="cDeltaString">TargetSpeed10</ControlName>
+	Line 1185: 							<ControlName d:type="cDeltaString">TargetSpeed100</ControlName>
+	Line 1259: 							<ControlName d:type="cDeltaString">AFBSpeed1</ControlName>
+	Line 1312: 							<ControlName d:type="cDeltaString">AFBSpeed10</ControlName>
+	Line 1428: 							<ControlName d:type="cDeltaString">AFBSpeed100</ControlName>
+ C:\Users\Matthias\ts_temp\DTG\RhineValley1\RailVehicles\Electric\BR189\Engine\BR189_Engine_nd.xml (97 hits)
+	Line 1286: 							<ControlName d:type="cDeltaString">TargetSpeed100</ControlName>
+	Line 1360: 							<ControlName d:type="cDeltaString">TargetSpeed10</ControlName>
+	Line 1488: 							<ControlName d:type="cDeltaString">TargetSpeed1</ControlName>
+  C:\Users\Matthias\ts_temp\DTG\MunichRosenheim\RailVehicles\Electric\BR101\Default\Engine\br101_nd.xml (78 hits)
+	Line 587: 							<ControlName d:type="cDeltaString">LZB_SignalSpeed</ControlName>
+	Line 598: 							<ControlName d:type="cDeltaString">LZB_Speed</ControlName>
+  BR155_Engine
+	Line 3396: 							<ControlName d:type="cDeltaString">LZB_Distance</ControlName>
+	Line 3432: 							<ControlName d:type="cDeltaString">LZB_DistanceK</ControlName>
+	Line 3522: 							<ControlName d:type="cDeltaString">LZB_DistanceH</ControlName>
+	Line 3648: 							<ControlName d:type="cDeltaString">LZB_DistanceBar</ControlName>  *
 
-  public String getValue() {
-    return this.value;
-  }
+	Talent2
+	Line 6622: 							<ControlName d:type="cDeltaString">Destination</ControlName>
+	Line 3785: 							<ControlName d:type="cDeltaString">TargetDistance</ControlName>
+	Line 3807: 							<ControlName d:type="cDeltaString">TargetDistanceBar</ControlName>
+
+  * */
 }

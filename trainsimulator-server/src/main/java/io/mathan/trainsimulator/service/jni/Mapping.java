@@ -23,6 +23,7 @@ public class Mapping {
 
   private final Map<String, String> simpleMapping = new HashMap<>();
   private final Map<String, List<VirtualMapping>> virtualMapping = new HashMap<>();
+  private final Map<String, CombinedMapping> combinedMapping = new HashMap<>();
 
   public Map<String, String> getSimpleMapping() {
     return this.simpleMapping;
@@ -30,6 +31,10 @@ public class Mapping {
 
   public Map<String, List<VirtualMapping>> getVirtualMapping() {
     return this.virtualMapping;
+  }
+
+  public Map<String, CombinedMapping> getCombinedMapping() {
+    return combinedMapping;
   }
 
   public static class VirtualMapping {
@@ -48,6 +53,20 @@ public class Mapping {
 
     public Float getValue() {
       return this.value;
+    }
+  }
+
+  public static class CombinedMapping {
+
+    private final String[] controls;
+
+    public CombinedMapping(String[] controls) {
+
+      this.controls = controls;
+    }
+
+    public String[] getControls() {
+      return controls;
     }
   }
 }

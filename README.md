@@ -100,7 +100,35 @@ Therefore mappings can be defined if the name of the control does not match the 
 
 Please see [default.mapping](./trainsimulator-server/src/main/resources/default.mapping) for details.
 
-### Sample trainsimulator-ft232h
+### Sample trainsimulator-ft232h (second version)
+
+The description of the first version using ft232h can be found in the next chapter. After that I created a second version with more functionality. It is using a Adafruit FT232h breakout as USB decive
+too. But this time more devices are connected using I2C protocol. I used:
+
+- 1 x "PZB-Würfel"
+- 2 x [MCP23017] for GPIO (GPIOs of [FT232h] cannot be used as I2C is required for other devices)
+- 3 x [Sparkfun 4 digit 7 segment] in white, red and blue
+- 1 x [Adafruit bargraph] with 24 segments green/yellow/red
+- 1 x [LED stripe]
+- 2 x On/On Switches (as input)
+- 2 x Buzzer
+
+With this sample project I can show all pzb controls, sifa light the LZB distance (<1000m red, <4000m yellow, >4000m green) and numbers/time on the three 4 digit displays. Currently I implemented:
+- showing time (scenario time)
+- showing LZB distance in meters
+- showing LZB speed (Vsoll which is maximum speed allowed in current section, Vziel which is maximum speed allowed in next section)
+- showing AFB target speed
+- showing current speed
+
+<img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/device.jpg" width="200px">
+<img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/device_pzb_1.jpg" width="200px">
+<img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/device_pzb_2.jpg" width="200px">
+<img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/device_speed.jpg" width="200px">
+<img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/device_time.jpg" width="200px">
+<img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/device_lzb.jpg" width="200px">
+
+
+### Sample trainsimulator-ft232h (first version)
 
 This sample project adds a Adafruit FT232h breakout as USB devices to the host and sends the control data using GPIO. Therefore trainsimulator-ft232h extends the Spring Boot application of
 trainsimulator-server by registering an additional component to receive events that sent to the FT232h. 
@@ -145,3 +173,9 @@ Requirements:
  
 <img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/ft232h_front.jpg" width="200px">
 <img src="https://raw.githubusercontent.com/reallyinsane/trainsimulator-controller/master/ft232h_back.jpg" width="200px">
+
+[FT232h]: https://www.amazon.de/Adafruit-FT232H-Breakout-General-Purpose/dp/B00XW2MD30
+[MCP23017]: https://www.microchip.com/wwwproducts/en/MCP23017
+[Sparkfun 4 digit 7 segment]: https://www.sparkfun.com/products/11441
+[Adafruit bargraph]: https://www.adafruit.com/product/1721
+[LED stripe]: https://www.amazon.de/gp/product/B071KBY7NW/ref=ox_sc_act_title_2?smid=AQ1IBDB6G2RRD&psc=1
