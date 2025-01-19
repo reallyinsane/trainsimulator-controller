@@ -38,6 +38,15 @@ PZB LM 500Hz=PZB_500
 PZB LM 1000Hz=PZB_1000
 PZB LM Befehl40=PZB_40
 SifaWeg=VigilLight
+VigilLight=VigilLight
+PZB_85=PZB_85
+PZB_70=PZB_70
+PZB_40=PZB_40
+PZB_1000=PZB_1000
+PZB_500=PZB_500
+AFB_Speed=AFBSpeed
+
+
 
 # Virtual controls
 # OEBB 1144

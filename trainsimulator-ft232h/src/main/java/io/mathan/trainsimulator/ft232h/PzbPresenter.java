@@ -17,13 +17,17 @@ package io.mathan.trainsimulator.ft232h;
 import io.mathan.adafruit.Bargraph.Color;
 import io.mathan.trainsimulator.model.Control;
 import io.mathan.trainsimulator.model.ControlData;
+import io.mathan.trainsimulator.service.Controller;
 import io.mathan.trainsimulator.service.Event;
 import io.mathan.trainsimulator.service.Present;
 import javax.annotation.PreDestroy;
+
+import io.mathan.trainsimulator.service.Presenter;
 import net.sf.yad2xx.FTDIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +46,9 @@ public class PzbPresenter implements InitializingBean {
 
   private int DELAY = 20;
 
-  private Ft232h ft232h;
+  private Ft232hRebuild ft232h;
+  @Autowired
+  private Controller presenter;
 
   public PzbPresenter() {
   }
@@ -163,18 +169,18 @@ public class PzbPresenter implements InitializingBean {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    ft232h = Ft232h.getInstance();
-//    logger.info("startup test started");
-//    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
-//    for (String control : controls) {
-//      logger.info(String.format("%s ON", control));
-//      present(getOnEvent(control));
-//      Thread.sleep(500);
-//      logger.info(String.format("%s OFF", control));
-//      present(getOffEvent(control));
-//      Thread.sleep(500);
-//    }
-//    logger.info("startup test finished");
+    ft232h = Ft232hRebuild.getInstance();
+    logger.info("startup test started");
+    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
+    for (String control : controls) {
+      logger.info(String.format("%s ON", control));
+      presenter.present(getOnEvent(control));
+      Thread.sleep(500);
+      logger.info(String.format("%s OFF", control));
+      presenter.present(getOffEvent(control));
+      Thread.sleep(500);
+    }
+    logger.info("startup test finished");
   }
 
   private Event getOnEvent(String control) {

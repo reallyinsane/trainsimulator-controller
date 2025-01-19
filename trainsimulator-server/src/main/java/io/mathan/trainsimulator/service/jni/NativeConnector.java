@@ -93,6 +93,7 @@ public class NativeConnector implements InitializingBean, Connector {
       locomotive.setProduct(tokenizer.nextToken());
       locomotive.setEngine(tokenizer.nextToken());
       locomotive.setCombinedThrottleBrake(this.nativeLibrary.GetRailSimCombinedThrottleBrake());
+      System.out.println(this.nativeLibrary.GetControllerList());
       Mapping defaultMapping = getMapping("default");
       Mapping locoMapping = getMapping(locomotive.getEngine());
       locomotive
