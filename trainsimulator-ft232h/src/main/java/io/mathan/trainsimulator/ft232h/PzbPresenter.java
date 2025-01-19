@@ -47,8 +47,8 @@ public class PzbPresenter implements InitializingBean {
   private int DELAY = 20;
 
   private Ft232hRebuild ft232h;
-  @Autowired
-  private Controller presenter;
+//  @Autowired
+//  private Controller presenter;
 
   public PzbPresenter() {
   }
@@ -114,7 +114,7 @@ public class PzbPresenter implements InitializingBean {
 
   @Present(Control.LZBBuzzer)
   public void lzbWarning(Event event) throws FTDIException {
-    //TODO
+    ft232h.setLZBBuzzer(toBoolean(event));
   }
 
   @Present({"VSoll", "AFBSpeed"})
@@ -170,17 +170,17 @@ public class PzbPresenter implements InitializingBean {
   @Override
   public void afterPropertiesSet() throws Exception {
     ft232h = Ft232hRebuild.getInstance();
-    logger.info("startup test started");
-    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
-    for (String control : controls) {
-      logger.info(String.format("%s ON", control));
-      presenter.present(getOnEvent(control));
-      Thread.sleep(500);
-      logger.info(String.format("%s OFF", control));
-      presenter.present(getOffEvent(control));
-      Thread.sleep(500);
-    }
-    logger.info("startup test finished");
+//    logger.info("startup test started");
+//    String[] controls = {Control.Pzb55, Control.Pzb70, Control.Pzb85, Control.Pzb40, Control.Pzb500, Control.Pzb1000, Control.SifaLight, Control.SifaAlarm};
+//    for (String control : controls) {
+//      logger.info(String.format("%s ON", control));
+//      presenter.present(getOnEvent(control));
+//      Thread.sleep(500);
+//      logger.info(String.format("%s OFF", control));
+//      presenter.present(getOffEvent(control));
+//      Thread.sleep(500);
+//    }
+//    logger.info("startup test finished");
   }
 
   private Event getOnEvent(String control) {
